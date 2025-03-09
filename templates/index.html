@@ -59,7 +59,7 @@
         h3 {
             color: #1abc9c;
             font-size: 1.8em;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
             text-shadow: 0 0 8px #1abc9c;
             font-weight: 500;
         }
@@ -142,14 +142,64 @@
             background: #c0392b;
             box-shadow: 0 0 15px rgba(231, 76, 60, 0.7);
         }
+        .prediction-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 0px; /* Giảm tối đa khoảng trống phía trên */
+            align-items: stretch;
+        }
         .result {
-            margin-top: 15px;
-            padding: 15px;
+            flex: 1;
+            min-width: 200px;
+            padding: 5px 10px 10px 10px; /* Giảm padding-top */
             background: rgba(26, 188, 156, 0.1);
             border-radius: 12px;
             text-align: left;
             border: 1px solid #1abc9c;
             animation: fadeIn 0.5s ease-in;
+            font-size: 0.85em;
+        }
+        .stats {
+            flex: 1;
+            min-width: 200px;
+            font-size: 0.8em;
+            color: #1abc9c;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #1abc9c;
+        }
+        .stats .title {
+            font-weight: 700;
+            font-size: 1.1em; /* Tăng nhẹ kích thước chữ tiêu đề */
+            margin-bottom: 4px;
+        }
+        .stats .highlight {
+            color: #e74c3c;
+            font-weight: 500;
+            text-shadow: 0 0 5px #e74c3c;
+        }
+        .history-stats {
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #1abc9c;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #1abc9c;
+        }
+        .history-stats .title {
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 4px;
+        }
+        .history-stats .highlight {
+            color: #e74c3c;
+            font-weight: 500;
+            text-shadow: 0 0 5px #e74c3c;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(5px); }
@@ -188,6 +238,7 @@
             }
             h3 {
                 font-size: 1.4em;
+                margin-bottom: 4px;
             }
             form {
                 padding: 10px;
@@ -219,8 +270,28 @@
             p {
                 font-size: 1em;
             }
+            .prediction-container {
+                margin-top: 0px; /* Giảm tối đa trên mobile */
+                gap: 8px;
+            }
             .result {
-                padding: 10px;
+                padding: 4px 8px 8px 8px; /* Giảm padding-top trên mobile */
+                font-size: 0.85em;
+            }
+            .stats {
+                font-size: 0.7em;
+                padding: 8px;
+            }
+            .stats .title {
+                font-size: 1em; /* Điều chỉnh trên mobile */
+            }
+            .history-stats {
+                margin-top: 8px;
+                font-size: 0.7em;
+                padding: 8px;
+            }
+            .history-stats .title {
+                font-size: 1em;
             }
         }
     </style>
@@ -250,11 +321,28 @@
         <p>{{ current_kq | safe if current_kq else "Chưa có dữ liệu" }}</p>
 
         {% if result %}
-        <div class="result">
-            <h3>Dự đoán: <span class="highlight">{{ result.prediction }}</span></h3>
-            <p>• Tổng số lần trùng: <span class="highlight">{{ result.total_matches }}</span></p>
-            <p>• C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
-            <p>• L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
+        <div class="prediction-container">
+            <div class="result">
+                {% if result.error %}
+                <p>{{ result.error }}</p>
+                {% else %}
+                <h3>DỰ ĐOÁN: <span class="highlight">{{ result.prediction }} ({{ result.c_percentage if result.prediction == 'C' else result.l_percentage }}%)</span></h3>
+                <p>• Khớp: <span class="highlight">{{ result.total_matches }}</span></p>
+                <p>• C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
+                <p>• L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
+                {% endif %}
+            </div>
+            <div class="stats">
+                <p class="title">HIỆN TẠI:</p>
+                <p>CHUỖI WIN: <span class="highlight">{{ win_streak }}</span> | CHUỖI LOSE: <span class="highlight">{{ lose_streak }}</span></p>
+                <p class="title">TỔNG KẾT:</p>
+                <p>WIN: <span class="highlight">{{ win_count }}</span> | LOSE: <span class="highlight">{{ lose_count }}</span></p>
+                <p>CHUỖI WIN: <span class="highlight">{{ max_win_streak }}</span> | CHUỖI LOSE: <span class="highlight">{{ max_lose_streak }}</span></p>
+            </div>
+        </div>
+        <div class="history-stats">
+            <p class="title">LỊCH SỬ:</p>
+            <p>Chuỗi WIN cao nhất: <span class="highlight">{{ highest_win_streak }}</span> | Chuỗi LOSE cao nhất: <span class="highlight">{{ highest_lose_streak }}</span></p>
         </div>
         {% endif %}
 

@@ -1,146 +1,204 @@
 from flask import Flask, render_template, request
+import json
+import os
 
 app = Flask(__name__)
 
-# Dữ liệu mẫu ban đầu (30 chuỗi KQ)
-data_samples = [
-    "C C C C C L C L C C C C C L C C C L C C L C C L L C C C C C L C C L L C C L C L C L C L L L",
-    "L L L L L C L L L C C C C C L C C L L L C C L L L C C L L L C L C L L L C L C C L L L L L C C C C C C L",
-    "C L C C C L C L L C C C L C C C L C C C L C C L C C L L L L C C C L L L C L L C L L C L C C L L L L L L L L",
-    "C C L C L L C L L L C C C L C C L L C C C L C C C C L C L C C C C L L L C C L C L C C C L C L L L C L C C L",
-    "L C L C L L L L L C L C L C L C L L L L C L C L L L L C C L C L L C L L L L L C C L L C L L C L L L L",
-    "C C C L L L L L L L L C C C L C C C L C L L C C C C L C L C L L L C C C C C C C C L C C C C L C L L L",
-    "C L L L L C L L L C C L L C C L L L C C L L L C C L C L L L C L L L L C C C C L L L L C C L L C C L L",
-    "L L L C L C C L C C L C L C C L L L L C L L L L L L L L C C C L C L L C L L L C L C L L C L L L C L C L",
-    "L C C L C L C C L C L L C L C L C C L C L L C L L L C L L C C L C L C C L C C C C L L C L L C L C L C L",
-    "L C L C L L L C C L L C C L L C C L C C L L L L C L L L L C L L L L C C C L C C C C C C L C L C C C L",
-    "C C L L L L L L L C C C L C C C L C L L C C C C L C L C L L L C C C C C C C C L C C C C L C",
-    "C L L L L C L L L L C C L L C C L L L C C L L L C C L C L L L C L L L L C C C C L L L L C C L L",
-    "C C L C L C C L C C L L L C C C C L C L C L L C L L C L L L C L L C C C C L L L C L L L L L C L",
-    "C L C C C L C L L L L C C C C C L L C L C C L C L C C L L C C L L L C C C L C C C C C L L C L C L",
-    "L C L C L L L C C L L C C L L C C L C C L L L L C L L L L C L L L L C C C L L C C C C C C L C L",
-    "L C C C L C C C L C C L C L C C C C C L L C L L L C C C C C C L C C C L L L L L C L L C L L L C",
-    "L L L C C L L C L L C L L C L C L L L C C L C L C C C L C C C L C C L C L L C C C L C L C C C C",
-    "L C C C L L C L L C L L C C L L L L L C C L C C L C C L L C C C L C C C C C L C L C C C C L C C",
-    "L C C L L C L L C C L C C L L C L L L C C C L C L L C C C L L C L C C L L C L C",
-    "C L L C C L C C L L C L L C C C L C L L C C L C L C C L L C C L C L L C L C C L",
-    "C C L C L L C C L C L C C L L L C L C C L C L L C C C L L C L C C L L C L L C C",
-    "L L C C L C L C C L L C C L C L C L L C C L C C L L C L C C L L C C L C L C L C",
-    "C L C L C C L L C C C L C L L C L C C L L C C L C L C L C C L L C L C C L C L L",
-    "L C L C C L C L L C C C L C L C L C C L L C L C C L C L L C C L C L C C L L C C",
-    "C C L L C L C C L C L L C C C L C L C L L C C L C C L L C C L C L C L C C L L C",
-    "L L C L C C L C L C C L L C C C L C L L C C L C L C L C C L L C C L C L C L C L",
-    "C L C C L L C C L C L C L C C L L C C L C L C L C C L L C C L C L C C L L C L C",
-    "L C L C C L L C C L C L C C L L C C L C L C L L C C C L C L C L C C L L C L C C",
-    "C C L C L C L C C L L C C L C L C L L C C L C C L C L C L C C L L C C L C L C L",
-    "L L C C L C L C C L C L L C C C L C L C L C C L L C C L C L C L C C L L C C L C"
-]
+# Đường dẫn đến file database
+DATABASE_FILE = 'database.json'
+HISTORY_FILE = 'history.json'  # File mới để lưu lịch sử
 
-# Danh sách lưu KQ thực tế và KQ đầu tiên tra cứu
-real_kq = []  # Lưu KQ thực tế từ "Cập nhật"
-initial_kq = ""  # Lưu KQ từ "Phân Tích"
-selected_kq_length = 5  # Biến toàn cục cho "Phân Tích"
-update_kq_length = 5  # Biến toàn cục cho "Cập nhật"
+# Biến toàn cục để lưu trữ trạng thái
+current_kq = ""
+last_prediction = None
+win_count = 0
+lose_count = 0
+win_streak = 0
+lose_streak = 0
+max_win_streak = 0
+max_lose_streak = 0
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    global real_kq, initial_kq, selected_kq_length, update_kq_length
-    result = None
+# Tải dữ liệu từ database
+def load_database():
+    if os.path.exists(DATABASE_FILE):
+        with open(DATABASE_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return data.get('kq_patterns', [])
+    return []
 
-    if request.method == "POST":
-        # Lấy giá trị độ dài KQ từ select và lưu vào biến tương ứng
-        selected_kq_length = int(request.form.get("kq_length", selected_kq_length))
-        update_kq_length = int(request.form.get("update_kq_length", update_kq_length))
+# Lưu dữ liệu vào database
+def save_database(kq_patterns):
+    with open(DATABASE_FILE, 'w', encoding='utf-8') as f:
+        json.dump({'kq_patterns': kq_patterns}, f, ensure_ascii=False, indent=2)
 
-        # Xử lý nút New Game
-        if "new_game" in request.form:
-            real_kq = []
-            initial_kq = ""
-            selected_kq_length = 5
-            update_kq_length = 5
-            return render_template("index.html", result="Đã reset game!", current_kq="", real_kq_input="", selected_kq_length=selected_kq_length, update_kq_length=update_kq_length)
+# Tải dữ liệu từ history
+def load_history():
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            return data.get('highest_win_streak', 0), data.get('highest_lose_streak', 0)
+    return 0, 0
 
-        # Xử lý nút Phân Tích
-        if "kq_input" in request.form and request.form["kq_input"]:
-            kq_input = request.form["kq_input"].strip().upper()
-            kq_list = []
-            if kq_input and all(x in ["C", "L"] for x in kq_input.replace(" ", "")):
-                kq_list = kq_input.split() if " " in kq_input else list(kq_input)
-                recent_kq = " ".join(kq_list[-selected_kq_length:]) if len(kq_list) >= selected_kq_length else " ".join(kq_list)
-                initial_kq = recent_kq
-                result = process_kq(initial_kq)
-            else:
-                result = "Dữ liệu không hợp lệ! Vui lòng nhập KQ (C hoặc L)."
-            return render_template("index.html", result=result, current_kq=format_kq_display(initial_kq, real_kq), real_kq_input="", selected_kq_length=selected_kq_length, update_kq_length=update_kq_length)
+# Lưu dữ liệu vào history
+def save_history(highest_win_streak, highest_lose_streak):
+    with open(HISTORY_FILE, 'w', encoding='utf-8') as f:
+        json.dump({
+            'highest_win_streak': highest_win_streak,
+            'highest_lose_streak': highest_lose_streak
+        }, f, ensure_ascii=False, indent=2)
 
-        # Xử lý nút Cập nhật (Cập nhật và Phân Tích ngay lập tức với update_kq_length)
-        if "real_kq_input" in request.form and request.form["real_kq_input"]:
-            real_kq_input = request.form["real_kq_input"].strip().upper()
-            if real_kq_input and all(x in ["C", "L"] for x in real_kq_input.replace(" ", "")):
-                is_valid = True
-                kq_list = real_kq_input.split() if " " in real_kq_input else list(real_kq_input)
-                for i in range(len(kq_list) - 5):
-                    if all(kq_list[i] == kq_list[i+j] for j in range(6)):
-                        is_valid = False
-                        break
-                if is_valid:
-                    real_kq.extend(kq_list)
-                    if len(real_kq) > 50:
-                        real_kq = real_kq[-50:]
-                    # Tra cứu lại với update_kq_length KQ mới nhất từ real_kq
-                    recent_kq = " ".join(real_kq[-update_kq_length:] if len(real_kq) >= update_kq_length else real_kq)
-                    result = process_kq(recent_kq)
-                else:
-                    result = "Không hợp lệ! Không được nhập hơn 5 KQ giống nhau liên tiếp."
-            else:
-                result = "KQ thực tế không hợp lệ! Vui lòng nhập ít nhất 1 KQ (C hoặc L)."
-            return render_template("index.html", result=result, current_kq=format_kq_display(initial_kq, real_kq), real_kq_input="", selected_kq_length=selected_kq_length, update_kq_length=update_kq_length)
-
-    # Hiển thị mặc định
-    current_kq = format_kq_display(initial_kq, real_kq)
-    return render_template("index.html", result=result, current_kq=current_kq, real_kq_input="", selected_kq_length=selected_kq_length, update_kq_length=update_kq_length)
-
-def format_kq_display(initial_kq, real_kq):
-    # Ghép initial_kq với tối đa 50 KQ từ real_kq, xuống dòng mỗi 10 KQ
-    all_kq = (initial_kq.split() if initial_kq else []) + real_kq
-    if len(all_kq) > 50:
-        all_kq = all_kq[-50:]
-    if not all_kq:
-        return ""
-    result = []
-    for i in range(0, len(all_kq), 10):
-        chunk = " ".join(all_kq[i:i+10])
-        result.append(chunk)
-    return "<br>".join(result)
-
+# Hàm xử lý chuỗi KQ
 def process_kq(kq_input):
-    matches = []
-    for sample in data_samples:
-        if kq_input in sample:
-            matches.append(sample)
-    
-    if matches:
-        c_count = sum(1 for match in matches for i in range(len(match.split())) 
-                      if kq_input in " ".join(match.split()[:i+1]) and i + 1 < len(match.split()) and match.split()[i+1] == "C")
-        l_count = sum(1 for match in matches for i in range(len(match.split())) 
-                      if kq_input in " ".join(match.split()[:i+1]) and i + 1 < len(match.split()) and match.split()[i+1] == "L")
-        total = c_count + l_count
-        c_percentage = (c_count / total) * 100 if total > 0 else 0
-        l_percentage = (l_count / total) * 100 if total > 0 else 0
-        if c_percentage > l_percentage:
-            prediction = "C"
-        elif l_percentage > c_percentage:
-            prediction = "L"
-        else:
-            prediction = f"C/L ({c_percentage:.0f}%/{l_percentage:.0f}%)"
-        return {
-            "total_matches": len(matches),
-            "c_percentage": round(c_percentage, 2),
-            "l_percentage": round(l_percentage, 2),
-            "prediction": prediction
-        }
-    else:
-        return {"total_matches": 0, "c_percentage": 0, "l_percentage": 0, "prediction": "BỎ QUA"}
+    kq_input = kq_input.upper().replace(" ", "")
+    kq_list = list(kq_input)
+    kq_list = [x for x in kq_list if x in ['C', 'L']]
+    return kq_list
 
-if __name__ == "__main__":
+# Hàm phân tích KQ cho một mẫu cụ thể
+def analyze_single_kq(kq_list, kq_length, recent_kq):
+    patterns = {}
+    for i in range(len(kq_list) - kq_length):
+        pattern = tuple(kq_list[i:i + kq_length])
+        next_result = kq_list[i + kq_length] if i + kq_length < len(kq_list) else None
+        if next_result:
+            if pattern in patterns:
+                patterns[pattern].append(next_result)
+            else:
+                patterns[pattern] = [next_result]
+
+    current_pattern = tuple(recent_kq)
+    if current_pattern in patterns:
+        next_results = patterns[current_pattern]
+        total_matches = len(next_results)
+        c_count = next_results.count('C')
+        l_count = next_results.count('L')
+        return {
+            'total_matches': total_matches,
+            'c_count': c_count,
+            'l_count': l_count
+        }
+    return None
+
+# Hàm phân tích tổng hợp từ nhiều mẫu
+def analyze_kq(kq_list, kq_length, db_kq_patterns):
+    global last_prediction
+    if not kq_list and not db_kq_patterns:
+        return {'error': 'Không có dữ liệu để phân tích.'}
+
+    recent_kq = kq_list[-kq_length:] if len(kq_list) >= kq_length else None
+    if not recent_kq:
+        return {'error': f'Chuỗi KQ chưa đủ {kq_length} kết quả để phân tích.'}
+
+    total_matches = 0
+    total_c_count = 0
+    total_l_count = 0
+
+    if len(kq_list) >= kq_length:
+        user_result = analyze_single_kq(kq_list, kq_length, recent_kq)
+        if user_result:
+            total_matches += user_result['total_matches']
+            total_c_count += user_result['c_count']
+            total_l_count += user_result['l_count']
+
+    for pattern in db_kq_patterns:
+        pattern_list = process_kq(pattern)
+        if len(pattern_list) >= kq_length:
+            db_result = analyze_single_kq(pattern_list, kq_length, recent_kq)
+            if db_result:
+                total_matches += db_result['total_matches']
+                total_c_count += db_result['c_count']
+                total_l_count += db_result['l_count']
+
+    if total_matches == 0:
+        return {'error': 'Không tìm thấy mẫu phù hợp để dự đoán.'}
+
+    c_percentage = (total_c_count / total_matches) * 100 if total_matches > 0 else 50
+    l_percentage = (total_l_count / total_matches) * 100 if total_matches > 0 else 50
+    prediction = 'C' if c_percentage > l_percentage else 'L'
+    last_prediction = prediction
+
+    return {
+        'prediction': prediction,
+        'total_matches': total_matches,
+        'c_percentage': round(c_percentage, 2),
+        'l_percentage': round(l_percentage, 2)
+    }
+
+# Route chính
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    global current_kq, last_prediction, win_count, lose_count, win_streak, lose_streak, max_win_streak, max_lose_streak
+
+    result = None
+    selected_kq_length = 4
+    update_kq_length = 4
+    real_kq_input = ""
+    db_kq_patterns = load_database()
+
+    # Tải dữ liệu lịch sử
+    highest_win_streak, highest_lose_streak = load_history()
+
+    if request.method == 'POST':
+        if 'new_game' in request.form:
+            current_kq = ""
+            last_prediction = None
+            win_count = 0
+            lose_count = 0
+            win_streak = 0
+            lose_streak = 0
+            max_win_streak = 0
+            max_lose_streak = 0
+            return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak)
+
+        kq_input = request.form.get('kq_input', '')
+        selected_kq_length = int(request.form.get('kq_length', 4))
+        if kq_input:
+            kq_list = process_kq(kq_input)
+            if kq_list:
+                current_kq = " ".join(kq_list)
+                new_pattern = " ".join(kq_list)
+                if new_pattern not in db_kq_patterns:
+                    db_kq_patterns.append(new_pattern)
+                    save_database(db_kq_patterns)
+                result = analyze_kq(kq_list, selected_kq_length, db_kq_patterns)
+
+        real_kq_input = request.form.get('real_kq_input', '')
+        update_kq_length = int(request.form.get('update_kq_length', 4))
+        if real_kq_input:
+            real_kq_list = process_kq(real_kq_input)
+            if real_kq_list:
+                current_kq_list = current_kq.split() if current_kq else []
+                current_kq_list.extend(real_kq_list)
+                current_kq = " ".join(current_kq_list)
+
+                new_pattern = " ".join(real_kq_list)
+                if new_pattern not in db_kq_patterns:
+                    db_kq_patterns.append(new_pattern)
+                    save_database(db_kq_patterns)
+
+                if last_prediction and real_kq_list:
+                    actual_result = real_kq_list[-1]
+                    if actual_result == last_prediction:
+                        win_count += 1
+                        win_streak += 1
+                        lose_streak = 0
+                        max_win_streak = max(max_win_streak, win_streak)
+                    else:
+                        lose_count += 1
+                        lose_streak += 1
+                        win_streak = 0
+                        max_lose_streak = max(max_lose_streak, lose_streak)
+
+                    # Cập nhật lịch sử nếu cần
+                    if max_win_streak > highest_win_streak:
+                        highest_win_streak = max_win_streak
+                    if max_lose_streak > highest_lose_streak:
+                        highest_lose_streak = max_lose_streak
+                    save_history(highest_win_streak, highest_lose_streak)
+
+                result = analyze_kq(current_kq_list, update_kq_length, db_kq_patterns)
+
+    return render_template('index.html', current_kq=current_kq, result=result, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak)
+
+if __name__ == '__main__':
     app.run(debug=True)
