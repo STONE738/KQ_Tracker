@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra cứu KQ Chẵn Lẻ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tra cứu KQ Chẵn Lẻ</h1>
+        <form method="POST">
+            <input type="text" name="kq_input" placeholder="Nhập KQ (C L C L C)" required>
+            <button type="submit">Tra cứu</button>
+        </form>
+
+        <h2>Chuỗi KQ hiện tại:</h2>
+        <p>{{ current_kq if current_kq else "Chưa có dữ liệu" }}</p>
+
+        {% if result %}
+        <div class="result">
+            <h2>Kết quả tra cứu:</h2>
+            <p>• Tổng số lần trùng: <span class="highlight">{{ result.total_matches }}</span></p>
+            <p>• KQ sau chuỗi trùng:</p>
+            <p>  • C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
+            <p>  • L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
