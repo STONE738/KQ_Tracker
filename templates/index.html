@@ -2,92 +2,229 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tra cứu KQ Chẵn Lẻ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Xóc Dĩa - Nhập KQ</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #3498db, #9b59b6); /* Gradient xanh lam - tím nhạt */
             margin: 0;
             padding: 20px;
-            color: #333;
+            padding-top: env(safe-area-inset-top, 20px); /* Tránh notch/Dynamic Island */
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('https://www.transparenttextures.com/patterns/soft-wallpaper.png');
+            background-blend-mode: overlay;
         }
         .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px); /* Glassmorphism effect */
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            width: 90%;
+            max-width: 650px;
+            text-align: center;
+            border: 2px solid #8e44ad; /* Viền tím nhạt */
+            transition: transform 0.4s ease;
+        }
+        .container:hover {
+            transform: translateY(-10px);
         }
         h1 {
-            text-align: center;
-            color: #2c3e50;
+            color: #8e44ad;
+            font-size: 3em;
+            margin-bottom: 35px;
+            text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.9);
+            font-weight: 700;
+        }
+        h2 {
+            color: #f1c40f;
+            font-size: 2em;
+            margin: 30px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+            font-weight: 600;
+        }
+        h3 {
+            color: #8e44ad;
+            font-size: 2.4em;
             margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+            font-weight: 600;
         }
         form {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 30px; /* Khoảng cách giữa các form */
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px; /* Khoảng cách giữa hai form */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-        input[type="text"] {
-            flex: 1;
-            padding: 10px;
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        select, input[type="text"] {
+            padding: 15px;
             font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            flex: 1;
+            min-width: 180px;
+            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: box-shadow 0.3s ease, background 0.3s ease;
+        }
+        select:focus, input[type="text"]:focus {
+            box-shadow: inset 0 0 12px #8e44ad;
+            background: rgba(255, 255, 255, 0.25);
+            outline: none;
         }
         button {
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: white;
+            padding: 15px 40px;
+            background: #8e44ad; /* Nền tím nhạt */
+            color: #fff;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         button:hover {
-            background-color: #2980b9;
+            background: #9b59b6; /* Tím sáng hơn khi hover */
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(142, 68, 173, 0.6); /* Hiệu ứng neon */
         }
         .new-game-btn {
-            background-color: #e74c3c;
-            margin-bottom: 10px;
+            background: #e74c3c;
+            color: #fff;
+            margin-bottom: 30px;
+            padding: 18px;
+            font-size: 1.5em;
         }
         .new-game-btn:hover {
-            background-color: #c0392b;
+            background: #c0392b;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
         }
         .result {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #ecf0f1;
-            border-radius: 4px;
+            margin-top: 35px;
+            padding: 30px;
+            background: rgba(142, 68, 173, 0.15);
+            border-radius: 15px;
+            text-align: left;
+            border: 1px solid #8e44ad;
+            animation: fadeIn 0.7s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         p {
             margin: 10px 0;
+            color: #f1c40f;
+            font-size: 1.4em;
+            white-space: pre-wrap;
         }
         .highlight {
-            font-weight: bold;
+            font-weight: 600;
             color: #e74c3c;
+            text-shadow: 1px 1px 4px #000;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+                padding-top: calc(env(safe-area-inset-top, 20px) + 15px);
+                padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 15px);
+            }
+            .container {
+                padding: 25px;
+                width: 95%;
+            }
+            h1 {
+                font-size: 2.2em;
+            }
+            h2 {
+                font-size: 1.6em;
+            }
+            h3 {
+                font-size: 1.8em;
+            }
+            form {
+                padding: 15px;
+                gap: 20px;
+            }
+            .input-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            select, input[type="text"] {
+                width: 100%;
+                font-size: 14px;
+                padding: 12px;
+                min-width: unset;
+            }
+            button {
+                width: 100%;
+                font-size: 14px;
+                padding: 12px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Tra cứu KQ Chẵn Lẻ</h1>
-        <form method="POST">
-            <input type="text" name="kq_input" placeholder="Nhập KQ (CLCC hoặc C L C C)" required>
-            <button type="submit">Tra cứu</button>
-        </form>
+        <h1>Nhập KQ Xóc Dĩa</h1>
         <form method="POST">
             <button type="submit" name="new_game" class="new-game-btn">New Game</button>
         </form>
+        <form method="POST">
+            <div class="input-group">
+                <select name="kq_length">
+                    <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4 KQ mới nhất</option>
+                    <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5 KQ mới nhất</option>
+                    <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6 KQ mới nhất</option>
+                    <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7 KQ mới nhất</option>
+                    <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8 KQ mới nhất</option>
+                </select>
+                <input type="text" name="kq_input" placeholder="Nhập KQ (CLCCL hoặc C L C C L)" required>
+                <button type="submit">Phân Tích</button>
+            </div>
+        </form>
+        <form method="POST">
+            <div class="input-group">
+                <select name="update_kq_length">
+                    <option value="4" {% if update_kq_length == 4 %}selected{% endif %}>4 KQ mới nhất</option>
+                    <option value="5" {% if update_kq_length == 5 %}selected{% endif %}>5 KQ mới nhất</option>
+                    <option value="6" {% if update_kq_length == 6 %}selected{% endif %}>6 KQ mới nhất</option>
+                    <option value="7" {% if update_kq_length == 7 %}selected{% endif %}>7 KQ mới nhất</option>
+                    <option value="8" {% if update_kq_length == 8 %}selected{% endif %}>8 KQ mới nhất</option>
+                </select>
+                <input type="text" name="real_kq_input" placeholder="Nhập KQ thực tế (C L C)" value="{{ real_kq_input }}">
+                <button type="submit">Cập nhật</button>
+            </div>
+        </form>
 
         <h2>Chuỗi KQ hiện tại:</h2>
-        <p>{{ current_kq if current_kq else "Chưa có dữ liệu" }}</p>
+        <p>{{ current_kq | safe if current_kq else "Chưa có dữ liệu" }}</p>
 
         {% if result %}
         <div class="result">
-            <h2>Kết quả tra cứu:</h2>
-            <p>Dự đoán: <span class="highlight">{{ result.prediction }}</span></p>
+            <h3>Dự đoán: <span class="highlight">{{ result.prediction }}</span></h3>
             <p>• Tổng số lần trùng: <span class="highlight">{{ result.total_matches }}</span></p>
             <p>• C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
             <p>• L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
