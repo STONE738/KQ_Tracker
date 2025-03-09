@@ -48,6 +48,13 @@
         button:hover {
             background-color: #2980b9;
         }
+        .new-game-btn {
+            background-color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        .new-game-btn:hover {
+            background-color: #c0392b;
+        }
         .result {
             margin-top: 20px;
             padding: 15px;
@@ -67,8 +74,11 @@
     <div class="container">
         <h1>Tra cứu KQ Chẵn Lẻ</h1>
         <form method="POST">
-            <input type="text" name="kq_input" placeholder="Nhập KQ (C L C L C)" required>
+            <input type="text" name="kq_input" placeholder="Nhập KQ (CLCC hoặc C L C C)" required>
             <button type="submit">Tra cứu</button>
+        </form>
+        <form method="POST">
+            <button type="submit" name="new_game" class="new-game-btn">New Game</button>
         </form>
 
         <h2>Chuỗi KQ hiện tại:</h2>
@@ -77,10 +87,10 @@
         {% if result %}
         <div class="result">
             <h2>Kết quả tra cứu:</h2>
+            <p>Dự đoán: <span class="highlight">{{ result.prediction }}</span></p>
             <p>• Tổng số lần trùng: <span class="highlight">{{ result.total_matches }}</span></p>
-            <p>• KQ sau chuỗi trùng:</p>
-            <p>  • C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
-            <p>  • L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
+            <p>• C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
+            <p>• L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
         </div>
         {% endif %}
     </div>
