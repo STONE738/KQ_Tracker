@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#3498db"> <!-- Gợi ý tông màu nền -->
     <title>Xóc Dĩa - Nhập KQ</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #3498db, #9b59b6); /* Gradient xanh lam - tím nhạt */
+            background-attachment: fixed; /* Cố định gradient trên mobile */
             margin: 0;
-            padding: 20px;
-            padding-top: env(safe-area-inset-top, 20px); /* Tránh notch/Dynamic Island */
-            padding-bottom: env(safe-area-inset-bottom, 20px);
+            padding: 10px;
+            padding-top: env(safe-area-inset-top, 10px); /* Tránh notch/Dynamic Island */
+            padding-bottom: env(safe-area-inset-bottom, 10px);
             color: #fff;
             display: flex;
             justify-content: center;
@@ -21,167 +23,193 @@
             min-height: 100vh;
             background-image: url('https://www.transparenttextures.com/patterns/soft-wallpaper.png');
             background-blend-mode: overlay;
+            -webkit-background-clip: border-box; /* Đảm bảo gradient hiển thị trên mobile */
         }
         .container {
             background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px); /* Glassmorphism effect */
-            padding: 40px;
-            border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
             width: 90%;
             max-width: 650px;
             text-align: center;
-            border: 2px solid #8e44ad; /* Viền tím nhạt */
-            transition: transform 0.4s ease;
+            border: 2px solid #8e44ad;
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
         }
         .container:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
         }
         h1 {
             color: #8e44ad;
-            font-size: 3em;
-            margin-bottom: 35px;
-            text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.9);
-            font-weight: 700;
-        }
-        h2 {
-            color: #f1c40f;
-            font-size: 2em;
-            margin: 30px 0;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
-            font-weight: 600;
-        }
-        h3 {
-            color: #8e44ad;
-            font-size: 2.4em;
+            font-size: 2.2em;
             margin-bottom: 20px;
             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
             font-weight: 600;
         }
+        h2 {
+            color: #f1c40f;
+            font-size: 1.5em;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-weight: 500;
+        }
+        h3 {
+            color: #8e44ad;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-weight: 500;
+        }
         form {
             display: flex;
             flex-direction: column;
-            gap: 30px; /* Khoảng cách giữa các form */
+            gap: 20px;
             background: rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px; /* Khoảng cách giữa hai form */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
         .input-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
             justify-content: center;
         }
         select, input[type="text"] {
-            padding: 15px;
-            font-size: 16px;
+            padding: 12px;
+            font-size: 14px;
             border: none;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #2c3e50; /* Đổi màu chữ thành xám đậm để dễ nhìn */
             flex: 1;
-            min-width: 180px;
-            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.2);
+            min-width: 150px;
+            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.15);
             transition: box-shadow 0.3s ease, background 0.3s ease;
+            -webkit-appearance: none; /* Loại bỏ style mặc định trên mobile */
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238e44ad' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
         }
         select:focus, input[type="text"]:focus {
-            box-shadow: inset 0 0 12px #8e44ad;
-            background: rgba(255, 255, 255, 0.25);
+            box-shadow: inset 0 0 10px #8e44ad;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ecf0f1; /* Chữ nhạt hơn khi focus */
             outline: none;
         }
         button {
-            padding: 15px 40px;
-            background: #8e44ad; /* Nền tím nhạt */
+            padding: 12px 30px;
+            background: #8e44ad;
             color: #fff;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 16px;
-            transition: all 0.4s ease;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         button:hover {
-            background: #9b59b6; /* Tím sáng hơn khi hover */
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(142, 68, 173, 0.6); /* Hiệu ứng neon */
+            background: #9b59b6;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(142, 68, 173, 0.5);
         }
         .new-game-btn {
             background: #e74c3c;
             color: #fff;
-            margin-bottom: 30px;
-            padding: 18px;
-            font-size: 1.5em;
+            margin-bottom: 15px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border-radius: 10px;
         }
         .new-game-btn:hover {
             background: #c0392b;
-            box-shadow: 0 0 20px rgba(231, 76, 60, 0.6);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
         }
         .result {
-            margin-top: 35px;
-            padding: 30px;
-            background: rgba(142, 68, 173, 0.15);
-            border-radius: 15px;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(142, 68, 173, 0.12);
+            border-radius: 12px;
             text-align: left;
             border: 1px solid #8e44ad;
-            animation: fadeIn 0.7s ease-in;
+            animation: fadeIn 0.5s ease-in;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
         p {
-            margin: 10px 0;
+            margin: 8px 0;
             color: #f1c40f;
-            font-size: 1.4em;
+            font-size: 1.2em;
             white-space: pre-wrap;
+            line-height: 1.4;
         }
         .highlight {
-            font-weight: 600;
+            font-weight: 500;
             color: #e74c3c;
-            text-shadow: 1px 1px 4px #000;
+            text-shadow: 1px 1px 3px #000;
         }
         @media (max-width: 600px) {
             body {
-                padding: 15px;
-                padding-top: calc(env(safe-area-inset-top, 20px) + 15px);
-                padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 15px);
+                padding: 10px;
+                padding-top: calc(env(safe-area-inset-top, 10px) + 5px);
+                padding-bottom: calc(env(safe-area-inset-bottom, 10px) + 5px);
             }
             .container {
-                padding: 25px;
+                padding: 15px;
+                max-height: 92vh;
                 width: 95%;
             }
             h1 {
-                font-size: 2.2em;
-            }
-            h2 {
-                font-size: 1.6em;
-            }
-            h3 {
                 font-size: 1.8em;
             }
+            h2 {
+                font-size: 1.3em;
+            }
+            h3 {
+                font-size: 1.5em;
+            }
             form {
-                padding: 15px;
-                gap: 20px;
+                padding: 10px;
+                gap: 15px;
+                margin-bottom: 10px;
             }
             .input-group {
                 flex-direction: column;
-                gap: 15px;
+                gap: 10px;
             }
             select, input[type="text"] {
                 width: 100%;
-                font-size: 14px;
-                padding: 12px;
+                font-size: 12px;
+                padding: 10px;
                 min-width: unset;
+                color: #2c3e50; /* Giữ màu chữ đậm trên mobile */
+            }
+            select:focus, input[type="text"]:focus {
+                background: rgba(255, 255, 255, 0.2);
+                color: #ecf0f1;
             }
             button {
                 width: 100%;
-                font-size: 14px;
-                padding: 12px;
+                font-size: 12px;
+                padding: 10px;
+            }
+            .new-game-btn {
+                padding: 8px 15px;
+                font-size: 1em;
+            }
+            p {
+                font-size: 1em;
             }
         }
     </style>
