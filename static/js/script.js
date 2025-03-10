@@ -1,1 +1,1 @@
-// File này có thể để trống nếu không có logic JavaScript bổ sung
+// Đã tích hợp trực tiếp hàm toggleMenu() trong index.html

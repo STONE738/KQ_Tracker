@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#d2b48c">
+    <meta name="theme-color" content="#228B22">
     <title>KQ2_Tracker</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -12,14 +12,19 @@
 <body>
     <div class="container">
         <header class="header">
-            <form method="POST" style="display: inline;">
-                <button type="submit" name="new_game" class="new-game-btn">New Game</button>
-            </form>
-            <form method="POST" style="display: inline;">
-                <button type="submit" name="tab" value="analyze" class="tab-btn {% if tab == 'analyze' %}active{% endif %}">Phân Tích</button>
-                <button type="submit" name="tab" value="simulate" class="tab-btn {% if tab == 'simulate' %}active{% endif %}">Mô phỏng</button>
-                <button type="submit" name="tab" value="ai" class="tab-btn {% if tab == 'ai' %}active{% endif %}">AI</button>
-            </form>
+            <div class="header-top">
+                <form method="POST" class="new-game-form">
+                    <button type="submit" name="new_game" class="new-game-btn">New Game</button>
+                </form>
+                <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+            </div>
+            <nav class="nav-menu" id="navMenu">
+                <form method="POST">
+                    <button type="submit" name="tab" value="analyze" class="tab-btn {% if tab == 'analyze' %}active{% endif %}">Phân Tích</button>
+                    <button type="submit" name="tab" value="simulate" class="tab-btn {% if tab == 'simulate' %}active{% endif %}">Mô phỏng</button>
+                    <button type="submit" name="tab" value="ai" class="tab-btn {% if tab == 'ai' %}active{% endif %}">AI</button>
+                </form>
+            </nav>
         </header>
 
         <div class="main-content">
@@ -28,15 +33,15 @@
                 <div id="phan-tich" class="{% if state == 'cap_nhat' %}hidden{% endif %}">
                     <form method="POST">
                         <div class="input-group">
-                            <select name="kq_length">
+                            <select name="kq_length" class="full-width">
                                 <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4 KQ</option>
                                 <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5 KQ</option>
                                 <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6 KQ</option>
                                 <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7 KQ</option>
                                 <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8 KQ</option>
                             </select>
-                            <input type="text" name="kq_input" placeholder="Nhập KQ (0-4 hoặc C/L)" required>
-                            <button type="submit">Phân Tích</button>
+                            <input type="text" name="kq_input" placeholder="Nhập KQ (0-4 hoặc C/L)" required class="full-width">
+                            <button type="submit" class="full-width">Phân Tích</button>
                         </div>
                     </form>
                 </div>
@@ -44,21 +49,21 @@
                 <div id="cap-nhat" class="{% if state != 'cap_nhat' %}hidden{% endif %}">
                     <form method="POST">
                         <div class="input-group">
-                            <select name="update_kq_length">
+                            <select name="update_kq_length" class="full-width">
                                 <option value="4" {% if update_kq_length == 4 %}selected{% endif %}>4 KQ</option>
                                 <option value="5" {% if update_kq_length == 5 %}selected{% endif %}>5 KQ</option>
                                 <option value="6" {% if update_kq_length == 6 %}selected{% endif %}>6 KQ</option>
                                 <option value="7" {% if update_kq_length == 7 %}selected{% endif %}>7 KQ</option>
                                 <option value="8" {% if update_kq_length == 8 %}selected{% endif %}>8 KQ</option>
                             </select>
-                            <input type="text" name="real_kq_input" placeholder="Nhập KQ thực tế (0-4 hoặc C/L)" value="{{ real_kq_input }}">
-                            <button type="submit">Cập Nhật</button>
+                            <input type="text" name="real_kq_input" placeholder="Nhập KQ thực tế (0-4 hoặc C/L)" value="{{ real_kq_input }}" class="full-width">
+                            <button type="submit" class="full-width">Cập Nhật</button>
                         </div>
                     </form>
                 </div>
 
                 <h2>Chuỗi KQ hiện tại:</h2>
-                <p>{{ current_kq | safe if current_kq else "Chưa có dữ liệu" }}</p>
+                <p class="current-kq">{{ current_kq | safe if current_kq else "Chưa có dữ liệu" }}</p>
 
                 {% if result %}
                     <div class="result-container">
@@ -81,10 +86,10 @@
                             <p>WIN: {{ win_count }} | LOSE: {{ lose_count }}</p>
                             <p>WIN max: {{ max_win_streak }} | LOSE max: {{ max_lose_streak }}</p>
                         </div>
-                    </div>
-                    <div class="history-stats">
-                        <p class="title">LỊCH SỬ:</p>
-                        <p>WIN max: {{ highest_win_streak }} | LOSE max: {{ highest_lose_streak }}</p>
+                        <div class="history-stats">
+                            <p class="title">LỊCH SỬ:</p>
+                            <p>WIN max: {{ highest_win_streak }} | LOSE max: {{ highest_lose_streak }}</p>
+                        </div>
                     </div>
                 {% endif %}
             </div>
@@ -92,42 +97,46 @@
             <!-- Tab Mô phỏng -->
             <div id="simulate-tab" class="{% if tab != 'simulate' %}hidden{% endif %}">
                 <form method="POST">
-                    <div class="input-group">
-                        <select name="sim_kq_length">
-                            <option value="4" {% if sim_kq_length == 4 %}selected{% endif %}>4 KQ</option>
-                            <option value="5" {% if sim_kq_length == 5 %}selected{% endif %}>5 KQ</option>
-                            <option value="6" {% if sim_kq_length == 6 %}selected{% endif %}>6 KQ</option>
-                            <option value="7" {% if sim_kq_length == 7 %}selected{% endif %}>7 KQ</option>
-                            <option value="8" {% if sim_kq_length == 8 %}selected{% endif %}>8 KQ</option>
-                        </select>
-                        <select name="sim_method">
-                            <option value="default" {% if sim_method == 'default' %}selected{% endif %}>Default</option>
-                            <option value="latest_pattern" {% if sim_method == 'latest_pattern' %}selected{% endif %}>Latest</option>
-                            <option value="frequency" {% if sim_method == 'frequency' %}selected{% endif %}>Freq</option>
-                        </select>
-                        <input type="text" name="sim_kq_input" placeholder="Nhập KQ (0-4/C/L)" required>
-                        <button type="submit">Mô phỏng</button>
+                    <div class="simulation-section">
+                        <div class="input-group-row">
+                            <select name="sim_kq_length" class="half-width">
+                                <option value="4" {% if sim_kq_length == 4 %}selected{% endif %}>4 KQ</option>
+                                <option value="5" {% if sim_kq_length == 5 %}selected{% endif %}>5 KQ</option>
+                                <option value="6" {% if sim_kq_length == 6 %}selected{% endif %}>6 KQ</option>
+                                <option value="7" {% if sim_kq_length == 7 %}selected{% endif %}>7 KQ</option>
+                                <option value="8" {% if sim_kq_length == 8 %}selected{% endif %}>8 KQ</option>
+                            </select>
+                            <select name="sim_method" class="half-width">
+                                <option value="default" {% if sim_method == 'default' %}selected{% endif %}>Default</option>
+                                <option value="latest_pattern" {% if sim_method == 'latest_pattern' %}selected{% endif %}>Latest</option>
+                                <option value="frequency" {% if sim_method == 'frequency' %}selected{% endif %}>Freq</option>
+                            </select>
+                        </div>
+                        <div class="input-group-row">
+                            <input type="text" name="sim_kq_input" placeholder="Nhập KQ (0-4/C/L)" required class="full-width">
+                            <button type="submit" class="full-width">Mô phỏng</button>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <input type="number" name="initial_capital" value="" min="0" step="100" placeholder="Vốn ban đầu (VNĐ)">
-                        <input type="number" name="min_bet" value="" min="0" step="1" placeholder="Mức cược tối thiểu (VNĐ)">
-                        <input type="number" name="bet_amount" value="" min="0" step="1" placeholder="Mức cược (VNĐ)">
-                    </div>
-                    <div class="input-group">
-                        <h4>Thua liên tiếp:</h4>
+                    <div class="custom-settings-section {% if not use_custom_settings %}hidden{% endif %}">
+                        <div class="input-group-row">
+                            <input type="checkbox" name="use_custom_settings" {% if use_custom_settings %}checked{% endif %} onchange="this.form.submit()">
+                            <label>Dùng tùy chỉnh</label>
+                        </div>
+                        <div class="input-group-row">
+                            <input type="number" name="initial_capital" value="{{ initial_capital }}" min="0" step="100" placeholder="Vốn ban đầu (VNĐ)" class="half-width">
+                            <input type="number" name="min_bet" value="{{ min_bet }}" min="0" step="1" placeholder="Mức cược tối thiểu (VNĐ)" class="half-width">
+                        </div>
+                        <h4>Thua & Thắng liên tiếp:</h4>
                         {% for streak in range(1, 6) %}
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <label>{{ streak }} lần:</label>
-                                <input type="number" name="lose_streak_{{ streak }}" min="0" step="0.1" placeholder="Hệ số">
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <div class="input-group">
-                        <h4>Thắng liên tiếp:</h4>
-                        {% for streak in range(1, 6) %}
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <label>{{ streak }} lần:</label>
-                                <input type="number" name="win_streak_{{ streak }}" min="0" step="0.1" placeholder="Hệ số">
+                            <div class="streak-row">
+                                <div class="streak-half">
+                                    <label>Thua {{ streak }} lần:</label>
+                                    <input type="number" name="lose_streak_{{ streak }}" value="{{ lose_streak_bet_increase.get(streak, '') }}" min="0" step="0.1" placeholder="Hệ số" class="half-width">
+                                </div>
+                                <div class="streak-half">
+                                    <label>Thắng {{ streak }} lần:</label>
+                                    <input type="number" name="win_streak_{{ streak }}" value="{{ win_streak_bet_increase.get(streak, '') }}" min="0" step="0.1" placeholder="Hệ số" class="half-width">
+                                </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -147,32 +156,34 @@
                                 <p>Vốn ban đầu: {{ sim_result.initial_capital }} | Min bet: {{ sim_result.min_bet }} | Cuối: {{ sim_result.final_capital }}</p>
                                 <p>Lãi/Lỗ: {{ sim_result.profit_loss }}</p>
                                 <h4>Chi tiết ván:</h4>
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Ván</th>
-                                            <th>KQ tra cứu</th>
-                                            <th>Dự đoán</th>
-                                            <th>Thực tế</th>
-                                            <th>Mức cược</th>
-                                            <th>Lãi/Lỗ</th>
-                                            <th>Vốn hiện tại</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for res in sim_result.results %}
+                                <div class="table-wrapper">
+                                    <table class="table table-bordered">
+                                        <thead>
                                             <tr>
-                                                <td>{{ loop.index }}</td>
-                                                <td>{{ res.used_kq }}</td>
-                                                <td>{{ res.prediction }}</td>
-                                                <td>{{ res.actual }}</td>
-                                                <td>{{ res.bet_amount }}</td>
-                                                <td class="{% if res.profit_loss > 0 %}profit{% elif res.profit_loss < 0 %}loss{% endif %}">{{ res.profit_loss }}</td>
-                                                <td>{{ res.capital }}</td>
+                                                <th class="visible-mobile">Ván</th>
+                                                <th class="hidden-mobile">KQ tra cứu</th>
+                                                <th class="visible-mobile">Dự đoán</th>
+                                                <th class="visible-mobile">Thực tế</th>
+                                                <th class="hidden-mobile">Mức cược</th>
+                                                <th class="visible-mobile">Lãi/Lỗ</th>
+                                                <th class="hidden-mobile">Vốn hiện tại</th>
                                             </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {% for res in sim_result.results %}
+                                                <tr>
+                                                    <td class="visible-mobile">{{ loop.index }}</td>
+                                                    <td class="hidden-mobile">{{ res.used_kq }}</td>
+                                                    <td class="visible-mobile">{{ res.prediction }}</td>
+                                                    <td class="visible-mobile">{{ res.actual }}</td>
+                                                    <td class="hidden-mobile">{{ res.bet_amount }}</td>
+                                                    <td class="{% if res.profit_loss > 0 %}profit{% elif res.profit_loss < 0 %}loss{% endif %} visible-mobile">{{ res.profit_loss }}</td>
+                                                    <td class="hidden-mobile">{{ res.capital }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
@@ -186,15 +197,15 @@
             <div id="ai-tab" class="{% if tab != 'ai' %}hidden{% endif %}">
                 <form method="POST">
                     <div class="input-group">
-                        <select name="ai_kq_length">
+                        <select name="ai_kq_length" class="full-width">
                             <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4 KQ</option>
                             <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5 KQ</option>
                             <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6 KQ</option>
                             <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7 KQ</option>
                             <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8 KQ</option>
                         </select>
-                        <input type="text" name="ai_kq_input" placeholder="Nhập KQ (0-4/C/L)" required>
-                        <button type="submit" name="ai_predict">Dự đoán</button>
+                        <input type="text" name="ai_kq_input" placeholder="Nhập KQ (0-4/C/L)" required class="full-width">
+                        <button type="submit" name="ai_predict" class="full-width">Dự đoán</button>
                     </div>
                 </form>
 
@@ -224,6 +235,11 @@
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script>
+        function toggleMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+
         {% if sim_result and not sim_result.error %}
             const simCtx = document.getElementById('simChart').getContext('2d');
             const simLabels = Array.from({length: {{ sim_result.results|length }}}, (_, i) => i + 1);

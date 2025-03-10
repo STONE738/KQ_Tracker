@@ -17,7 +17,7 @@ def init_db():
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
                       pattern TEXT NOT NULL,
                       format TEXT NOT NULL,
-                      timestamp TEXT NOT NULL)''')  # Sửa NOT NOTNULL thành NOT NULL
+                      timestamp TEXT NOT NULL)''')
         c.execute('''CREATE TABLE IF NOT EXISTS history
                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
                       highest_win_streak INTEGER,
@@ -293,12 +293,15 @@ def index():
     ai_result = None
     selected_kq_length = 4
     update_kq_length = 4
-    sim_kq_length = 4
-    sim_method = "default"
-    initial_capital = 0
-    min_bet = 0
-    bet_amount = 0
+    sim_kq_length = session.get('sim_kq_length', 4)
+    sim_method = session.get('sim_method', 'default')
+    initial_capital = session.get('initial_capital', 0)
+    min_bet = session.get('min_bet', 0)
+    bet_amount = session.get('bet_amount', 0)
     real_kq_input = ""
+    lose_streak_bet_increase = session.get('lose_streak_bet_increase', {})
+    win_streak_bet_increase = session.get('win_streak_bet_increase', {})
+    use_custom_settings = session.get('use_custom_settings', False)
 
     if request.method == 'POST':
         if 'new_game' in request.form:
@@ -312,7 +315,7 @@ def index():
             max_lose_streak = 0
             session['state'] = 'phan_tich'
             session['tab'] = 'analyze'
-            return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, sim_kq_length=sim_kq_length, sim_method=sim_method, initial_capital=initial_capital, min_bet=min_bet, bet_amount=bet_amount, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'], tab=session['tab'], result=result, sim_result=sim_result, ai_result=ai_result)
+            return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, sim_kq_length=sim_kq_length, sim_method=sim_method, initial_capital=initial_capital, min_bet=min_bet, bet_amount=bet_amount, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'], tab=session['tab'], result=result, sim_result=sim_result, ai_result=ai_result, lose_streak_bet_increase=lose_streak_bet_increase, win_streak_bet_increase=win_streak_bet_increase, use_custom_settings=use_custom_settings)
 
         if 'tab' in request.form:
             session['tab'] = request.form['tab']
@@ -372,24 +375,32 @@ def index():
             sim_kq_input = request.form.get('sim_kq_input', '')
             sim_kq_length = int(request.form.get('sim_kq_length', 4))
             sim_method = request.form.get('sim_method', 'default')
-            initial_capital = float(request.form.get('initial_capital', 0))
-            min_bet = float(request.form.get('min_bet', 0))
-            bet_amount = float(request.form.get('bet_amount', 0))
+            initial_capital = float(request.form.get('initial_capital', 0) or 0)
+            min_bet = float(request.form.get('min_bet', 0) or 0)
+            use_custom_settings = 'use_custom_settings' in request.form
+            session['use_custom_settings'] = use_custom_settings
 
             lose_streak_bet_increase = {}
             for streak in range(1, 6):
                 multiplier = request.form.get(f'lose_streak_{streak}', '')
                 if multiplier:
                     lose_streak_bet_increase[streak] = float(multiplier)
+            session['lose_streak_bet_increase'] = lose_streak_bet_increase
 
             win_streak_bet_increase = {}
             for streak in range(1, 6):
                 multiplier = request.form.get(f'win_streak_{streak}', '')
                 if multiplier:
                     win_streak_bet_increase[streak] = float(multiplier)
+            session['win_streak_bet_increase'] = win_streak_bet_increase
+
+            session['sim_kq_length'] = sim_kq_length
+            session['sim_method'] = sim_method
+            session['initial_capital'] = initial_capital
+            session['min_bet'] = min_bet
 
             if sim_kq_input:
-                sim_result = simulate_game(sim_kq_input, sim_kq_length, db_patterns, sim_method, initial_capital, min_bet, bet_amount, lose_streak_bet_increase, win_streak_bet_increase)
+                sim_result = simulate_game(sim_kq_input, sim_kq_length, db_patterns, sim_method, initial_capital if use_custom_settings else 0, min_bet if use_custom_settings else 0, 0, lose_streak_bet_increase if use_custom_settings else None, win_streak_bet_increase if use_custom_settings else None)
                 if not sim_result.get('error'):
                     c.execute("INSERT INTO simulations (pattern, result, timestamp) VALUES (?, ?, ?)",
                               (sim_kq_input, json.dumps(sim_result), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
@@ -402,7 +413,7 @@ def index():
                 ai_result = ai_predict(ai_kq_input, ai_kq_length, db_patterns)
 
     db.close()
-    return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, sim_kq_length=sim_kq_length, sim_method=sim_method, initial_capital=initial_capital, min_bet=min_bet, bet_amount=bet_amount, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'], tab=session['tab'], result=result, sim_result=sim_result, ai_result=ai_result)
+    return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, sim_kq_length=sim_kq_length, sim_method=sim_method, initial_capital=initial_capital, min_bet=min_bet, bet_amount=0, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'], tab=session['tab'], result=result, sim_result=sim_result, ai_result=ai_result, lose_streak_bet_increase=lose_streak_bet_increase, win_streak_bet_increase=win_streak_bet_increase, use_custom_settings=use_custom_settings)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)

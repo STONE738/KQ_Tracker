@@ -1,125 +1,283 @@
 body {
-    background-color: #f5f5dc; /* Beige cổ điển */
-    color: #4a2c2a; /* Nâu đậm */
+    background-color: #E6F3E6; /* Xanh nhạt */
+    color: #2E8B57; /* Xanh lá cây đậm */
     font-family: 'Arial', sans-serif;
+    margin: 0;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: #fffaf0; /* Ivory */
-    border: 2px solid #8b4513; /* Nâu sẫm */
+    padding: 10px;
+    background-color: #F0FFF0; /* Xanh rất nhạt */
+    border: 2px solid #228B22; /* Xanh lá cây */
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 100, 0, 0.2);
 }
 
 .header {
-    background-color: #d2b48c; /* Nâu vàng */
+    background-color: #32CD32; /* Xanh lá cây sáng */
     padding: 10px;
     text-align: center;
-    border-bottom: 2px solid #8b4513;
+    border-bottom: 2px solid #228B22;
 }
 
-.new-game-btn, .tab-btn {
-    background-color: #8b4513; /* Nâu sẫm */
-    color: #fffaf0;
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.new-game-form {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.new-game-btn {
+    background-color: #228B22; /* Xanh lá cây */
+    color: #F0FFF0;
     border: none;
-    padding: 5px 10px;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.menu-toggle {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #F0FFF0;
+}
+
+.nav-menu {
+    margin-top: 10px;
+}
+
+.tab-btn {
+    background-color: #228B22; /* Xanh lá cây */
+    color: #F0FFF0;
+    border: none;
+    padding: 8px 16px;
     margin: 5px;
     cursor: pointer;
     border-radius: 5px;
+    font-size: 16px;
 }
 
 .tab-btn.active {
-    background-color: #d2691e; /* Chocolate */
+    background-color: #3CB371; /* Xanh lá trung */
 }
 
 .main-content {
-    padding: 20px;
+    padding: 15px;
 }
 
-.input-group {
+.simulation-section, .custom-settings-section {
+    margin-bottom: 20px;
+}
+
+.input-group-row {
     display: flex;
     gap: 10px;
     margin-bottom: 10px;
     flex-wrap: wrap;
 }
 
-input, select, button {
-    padding: 5px;
-    border: 1px solid #8b4513;
+.half-width {
+    width: 48%;
+    padding: 10px;
+    border: 1px solid #228B22;
     border-radius: 5px;
-    background-color: #fffaf0;
-    color: #4a2c2a;
+    background-color: #F0FFF0;
+    color: #2E8B57;
+    font-size: 16px;
 }
 
-button {
-    background-color: #d2b48c;
+.full-width {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #228B22;
+    border-radius: 5px;
+    background-color: #F0FFF0;
+    color: #2E8B57;
+    font-size: 16px;
+}
+
+button.full-width {
+    padding: 12px;
+    font-size: 18px;
+    background-color: #32CD32;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #c68e17;
+    background-color: #228B22;
+}
+
+.current-kq {
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 0;
 }
 
 .result-container, .chart-container {
     margin-top: 20px;
 }
 
-.result, .stats {
-    background-color: #f0e68c; /* Khaki */
+.result, .stats, .history-stats {
+    background-color: #D4F0D4; /* Xanh nhạt hơn */
     padding: 15px;
-    border: 1px solid #8b4513;
+    border: 1px solid #228B22;
     border-radius: 5px;
+    margin-bottom: 10px;
 }
 
 .title {
     font-weight: bold;
-    color: #8b4513;
+    color: #228B22;
 }
 
 .highlight {
-    color: #d2691e; /* Chocolate */
+    color: #3CB371; /* Xanh lá trung */
 }
 
-.history-stats {
-    margin-top: 10px;
-    background-color: #f0e68c;
-    padding: 10px;
-    border: 1px solid #8b4513;
-    border-radius: 5px;
+.table-wrapper {
+    overflow-x: auto;
 }
 
 .table {
-    background-color: #fffaf0;
-    color: #4a2c2a;
+    background-color: #F0FFF0;
+    color: #2E8B57;
+    width: 100%;
 }
 
 .table th, .table td {
-    border-color: #8b4513;
+    border-color: #228B22;
+    padding: 8px;
+    font-size: 14px;
 }
 
 .profit {
-    color: #2e8b57; /* Xanh lá cây đậm */
+    color: #006400; /* Xanh đậm */
     font-weight: bold;
 }
 
 .loss {
-    color: #8b0000; /* Đỏ đậm */
+    color: #8B0000; /* Đỏ đậm */
     font-weight: bold;
+}
+
+.chart-container {
+    width: 100%;
+    height: 300px;
 }
 
 .footer {
     text-align: center;
-    padding: 10px;
-    background-color: #d2b48c;
-    color: #4a2c2a;
-    border-top: 2px solid #8b4513;
+    padding: 15px;
+    background-color: #32CD32;
+    color: #2E8B57;
+    border-top: 2px solid #228B22;
     margin-top: 20px;
     border-radius: 0 0 10px 10px;
 }
 
 .hidden {
     display: none;
+}
+
+.streak-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.streak-half {
+    width: 48%;
+}
+
+.streak-half label {
+    font-size: 16px;
+}
+
+/* Media Queries cho điện thoại */
+@media (max-width: 768px) {
+    .container {
+        padding: 5px;
+    }
+
+    .header {
+        padding: 5px;
+    }
+
+    .new-game-btn {
+        padding: 10px 20px;
+        font-size: 18px;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-menu {
+        display: none;
+        flex-direction: column;
+        background-color: #32CD32;
+        padding: 10px;
+        border-top: 1px solid #228B22;
+    }
+
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .tab-btn {
+        width: 100%;
+        margin: 5px 0;
+        padding: 10px;
+        font-size: 18px;
+    }
+
+    .input-group-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .half-width, .full-width {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    button.full-width {
+        padding: 14px;
+        font-size: 20px;
+    }
+
+    .current-kq {
+        font-size: 14px;
+    }
+
+    .table th, .table td {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .hidden-mobile {
+        display: none;
+    }
+
+    .visible-mobile {
+        display: table-cell;
+    }
+
+    .chart-container {
+        height: 250px;
+    }
+
+    .footer {
+        padding: 20px;
+        font-size: 14px;
+    }
 }
