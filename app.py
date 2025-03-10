@@ -1,12 +1,13 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 import json
 import os
 
 app = Flask(__name__)
+app.secret_key = 'your-secret-key'  # Cần thiết để sử dụng session
 
 # Đường dẫn đến file database
 DATABASE_FILE = 'database.json'
-HISTORY_FILE = 'history.json'  # File mới để lưu lịch sử
+HISTORY_FILE = 'history.json'
 
 # Biến toàn cục để lưu trữ trạng thái
 current_kq = ""
@@ -129,6 +130,10 @@ def analyze_kq(kq_list, kq_length, db_kq_patterns):
 def index():
     global current_kq, last_prediction, win_count, lose_count, win_streak, lose_streak, max_win_streak, max_lose_streak
 
+    # Khởi tạo trạng thái nếu chưa có
+    if 'state' not in session:
+        session['state'] = 'phan_tich'  # Mặc định hiển thị dòng "Phân Tích"
+
     result = None
     selected_kq_length = 4
     update_kq_length = 4
@@ -148,7 +153,8 @@ def index():
             lose_streak = 0
             max_win_streak = 0
             max_lose_streak = 0
-            return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak)
+            session['state'] = 'phan_tich'  # Reset về trạng thái "Phân Tích"
+            return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'])
 
         kq_input = request.form.get('kq_input', '')
         selected_kq_length = int(request.form.get('kq_length', 4))
@@ -161,6 +167,8 @@ def index():
                     db_kq_patterns.append(new_pattern)
                     save_database(db_kq_patterns)
                 result = analyze_kq(kq_list, selected_kq_length, db_kq_patterns)
+                if not result.get('error'):  # Nếu phân tích thành công (không có lỗi)
+                    session['state'] = 'cap_nhat'  # Chuyển sang trạng thái "Cập Nhật"
 
         real_kq_input = request.form.get('real_kq_input', '')
         update_kq_length = int(request.form.get('update_kq_length', 4))
@@ -198,7 +206,7 @@ def index():
 
                 result = analyze_kq(current_kq_list, update_kq_length, db_kq_patterns)
 
-    return render_template('index.html', current_kq=current_kq, result=result, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak)
+    return render_template('index.html', current_kq=current_kq, result=result, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'])
 
 if __name__ == '__main__':
     app.run(debug=True)

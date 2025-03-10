@@ -146,13 +146,13 @@
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-top: 0px; /* Giảm tối đa khoảng trống phía trên */
+            margin-top: 0px;
             align-items: stretch;
         }
         .result {
             flex: 1;
             min-width: 200px;
-            padding: 5px 10px 10px 10px; /* Giảm padding-top */
+            padding: 5px 10px 10px 10px;
             background: rgba(26, 188, 156, 0.1);
             border-radius: 12px;
             text-align: left;
@@ -173,7 +173,7 @@
         }
         .stats .title {
             font-weight: 700;
-            font-size: 1.1em; /* Tăng nhẹ kích thước chữ tiêu đề */
+            font-size: 1.1em;
             margin-bottom: 4px;
         }
         .stats .highlight {
@@ -216,6 +216,10 @@
             font-weight: 500;
             color: #e74c3c;
             text-shadow: 0 0 5px #e74c3c;
+        }
+        /* Thêm CSS để ẩn/hiện form */
+        .hidden {
+            display: none;
         }
         @media (max-width: 600px) {
             body {
@@ -271,11 +275,11 @@
                 font-size: 1em;
             }
             .prediction-container {
-                margin-top: 0px; /* Giảm tối đa trên mobile */
+                margin-top: 0px;
                 gap: 8px;
             }
             .result {
-                padding: 4px 8px 8px 8px; /* Giảm padding-top trên mobile */
+                padding: 4px 8px 8px 8px;
                 font-size: 0.85em;
             }
             .stats {
@@ -283,7 +287,7 @@
                 padding: 8px;
             }
             .stats .title {
-                font-size: 1em; /* Điều chỉnh trên mobile */
+                font-size: 1em;
             }
             .history-stats {
                 margin-top: 8px;
@@ -303,19 +307,39 @@
             <button type="submit" name="new_game" class="new-game-btn">New Game</button>
         </form>
 
-        <form method="POST">
-            <div class="input-group">
-                <select name="kq_length">
-                    <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4 KQ mới nhất</option>
-                    <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5 KQ mới nhất</option>
-                    <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6 KQ mới nhất</option>
-                    <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7 KQ mới nhất</option>
-                    <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8 KQ mới nhất</option>
-                </select>
-                <input type="text" name="kq_input" placeholder="Nhập KQ (CLCCL hoặc C L C C L)" required>
-                <button type="submit">Phân Tích</button>
-            </div>
-        </form>
+        <!-- Dòng Phân Tích -->
+        <div id="phan-tich" {% if state == 'cap_nhat' %}class="hidden"{% endif %}>
+            <form method="POST">
+                <div class="input-group">
+                    <select name="kq_length">
+                        <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4 KQ mới nhất</option>
+                        <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5 KQ mới nhất</option>
+                        <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6 KQ mới nhất</option>
+                        <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7 KQ mới nhất</option>
+                        <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8 KQ mới nhất</option>
+                    </select>
+                    <input type="text" name="kq_input" placeholder="Nhập KQ (CLCCL hoặc C L C C L)" required>
+                    <button type="submit">Phân Tích</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Dòng Cập Nhật -->
+        <div id="cap-nhat" {% if state != 'cap_nhat' %}class="hidden"{% endif %}>
+            <form method="POST">
+                <div class="input-group">
+                    <select name="update_kq_length">
+                        <option value="4" {% if update_kq_length == 4 %}selected{% endif %}>4 KQ mới nhất</option>
+                        <option value="5" {% if update_kq_length == 5 %}selected{% endif %}>5 KQ mới nhất</option>
+                        <option value="6" {% if update_kq_length == 6 %}selected{% endif %}>6 KQ mới nhất</option>
+                        <option value="7" {% if update_kq_length == 7 %}selected{% endif %}>7 KQ mới nhất</option>
+                        <option value="8" {% if update_kq_length == 8 %}selected{% endif %}>8 KQ mới nhất</option>
+                    </select>
+                    <input type="text" name="real_kq_input" placeholder="Nhập KQ thực tế (C L C)" value="{{ real_kq_input }}">
+                    <button type="submit">Cập nhật</button>
+                </div>
+            </form>
+        </div>
 
         <h2>Chuỗi KQ hiện tại:</h2>
         <p>{{ current_kq | safe if current_kq else "Chưa có dữ liệu" }}</p>
@@ -345,20 +369,7 @@
             <p>Chuỗi WIN cao nhất: <span class="highlight">{{ highest_win_streak }}</span> | Chuỗi LOSE cao nhất: <span class="highlight">{{ highest_lose_streak }}</span></p>
         </div>
         {% endif %}
-
-        <form method="POST">
-            <div class="input-group">
-                <select name="update_kq_length">
-                    <option value="4" {% if update_kq_length == 4 %}selected{% endif %}>4 KQ mới nhất</option>
-                    <option value="5" {% if update_kq_length == 5 %}selected{% endif %}>5 KQ mới nhất</option>
-                    <option value="6" {% if update_kq_length == 6 %}selected{% endif %}>6 KQ mới nhất</option>
-                    <option value="7" {% if update_kq_length == 7 %}selected{% endif %}>7 KQ mới nhất</option>
-                    <option value="8" {% if update_kq_length == 8 %}selected{% endif %}>8 KQ mới nhất</option>
-                </select>
-                <input type="text" name="real_kq_input" placeholder="Nhập KQ thực tế (C L C)" value="{{ real_kq_input }}">
-                <button type="submit">Cập nhật</button>
-            </div>
-        </form>
     </div>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91df8e6778f8bd4e',t:'MTc0MTU3NTU2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
