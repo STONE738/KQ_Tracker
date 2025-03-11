@@ -3,297 +3,441 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#228B22">
-    <title>KQ2_Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="theme-color" content="#4B0082">
+    <title>Ai_Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #4B0082, #1E1A3C);
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 10px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .header {
+            background-color: #4B0082;
+            padding: 10px;
+            border-radius: 15px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header span {
+            font-size: 1.1em;
+        }
+        .header a {
+            color: #FF8C00;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        .header a:hover {
+            text-decoration: underline;
+        }
+        .main-content {
+            padding: 20px 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .kq-display {
+            margin: 10px 0;
+            padding: 10px;
+            border: 2px solid #FF8C00;
+            border-radius: 15px;
+            background: rgba(255, 255, 251, 0.05);
+            text-align: center;
+        }
+        .input-group {
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #FF8C00;
+            color: white;
+            border-radius: 25px;
+            padding: 10px;
+            text-align: center;
+            width: 80px;
+        }
+        .btn-custom {
+            background-color: #FF8C00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .btn-custom:hover {
+            background-color: #FFA500;
+        }
+        .update-btns {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .update-btn-group {
+            display: flex;
+            gap: 5px;
+        }
+        .update-btn {
+            background-color: #FF8C00;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .update-btn:hover {
+            background-color: #FFA500;
+        }
+        .result-container {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border: 2px solid #FF8C00;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        .result h3 {
+            color: #FF4500;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .result p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+        .result .highlight {
+            color: #FF4500;
+            font-weight: bold;
+        }
+        .prediction-circle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            position: sticky;
+            bottom: 150px;
+        }
+        .circle {
+            width: 100px;
+            height: 100px;
+            border: 3px solid yellow;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em; /* Tăng 100% */
+            font-weight: bold;
+            color: #8B0000; /* Đỏ đậm */
+        }
+        .circle-percentage {
+            color: #8B0000; /* Đỏ đậm */
+            font-size: 1.6em; /* Tăng 100% */
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .bottom-nav {
+            background-color: #4B0082;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #5A1D99;
+        }
+        .bottom-nav a, .bottom-nav form {
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            font-size: 1em;
+            text-transform: uppercase;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 20%;
+        }
+        .bottom-nav img {
+            width: 24px;
+            height: 24px;
+            display: block;
+            margin: 0 auto 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        .custom-settings-content {
+            margin: 10px 0;
+            padding: 10px;
+            border: 2px solid #FF8C00;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .streak-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .streak-half {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .streak-half:last-child {
+            margin-right: 0;
+        }
+        .fixed-bottom-input {
+            position: sticky;
+            bottom: 60px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #FF8C00;
+            padding: 5px;
+            text-align: center;
+        }
+        th {
+            background-color: #5A1D99;
+        }
+        .checkbox-group {
+            margin: 10px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <div class="header-top">
-                <form method="POST" class="new-game-form">
-                    <button type="submit" name="new_game" class="new-game-btn">New Game</button>
-                </form>
-                <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-            </div>
-            <nav class="nav-menu" id="navMenu">
-                <form method="POST">
-                    <button type="submit" name="tab" value="analyze" class="tab-btn {% if tab == 'analyze' %}active{% endif %}">Phân Tích</button>
-                    <button type="submit" name="tab" value="simulate" class="tab-btn {% if tab == 'simulate' %}active{% endif %}">Mô phỏng</button>
-                    <button type="submit" name="tab" value="ai" class="tab-btn {% if tab == 'ai' %}active{% endif %}">AI</button>
-                </form>
-            </nav>
+            {% if username %}
+                <span>Chào, {{ username }} | <a href="{{ url_for('logout') }}">Đăng xuất</a></span>
+            {% else %}
+                <a href="{{ url_for('login') }}">Đăng nhập</a> | <a href="{{ url_for('register') }}">Đăng ký</a>
+            {% endif %}
         </header>
+        <div class="kq-display">
+            <p>Chuỗi KQ hiện tại: <span class="highlight">{{ current_kq | safe if current_kq else "Chưa có dữ liệu" }}</span></p>
+        </div>
 
         <div class="main-content">
-            <!-- Tab Phân Tích & Cập Nhật -->
+            <!-- Tab Phân Tích -->
             <div id="analyze-tab" class="{% if tab != 'analyze' %}hidden{% endif %}">
-                <div id="phan-tich" class="{% if state == 'cap_nhat' %}hidden{% endif %}">
-                    <form method="POST">
-                        <div class="input-group">
-                            <select name="kq_length" class="full-width">
+                {% if result and not result.error %}
+                    <div class="result-container">
+                        <p>SỐ LẦN KHỚP: <span class="highlight">{{ result.total_matches }}</span></p>
+                        <p>C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
+                        <p>L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
+                        <p>Tỷ lệ số (0-4): 0: <span class="highlight">{{ result.number_stats['0'] }}%</span> | 1: <span class="highlight">{{ result.number_stats['1'] }}%</span> | 2: <span class="highlight">{{ result.number_stats['2'] }}%</span> | 3: <span class="highlight">{{ result.number_stats['3'] }}%</span> | 4: <span class="highlight">{{ result.number_stats['4'] }}%</span></p>
+                    </div>
+                {% endif %}
+                <div class="prediction-circle">
+                    <div class="circle">{{ result.prediction if result and not result.error else "C/L" }}</div>
+                    <div class="circle-percentage">{{ (result.c_percentage if result.prediction == 'C' else result.l_percentage) if result and not result.error else "0%" }}</div>
+                </div>
+                <div class="fixed-bottom-input">
+                    <div class="input-group">
+                        <form method="POST" id="analyze-form">
+                            <input type="text" name="kq_input" placeholder="Nhập KQ (0-4 hoặc C/L)" required class="form-control" id="kq-input">
+                            <select name="kq_length" class="form-control">
                                 <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4 KQ</option>
                                 <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5 KQ</option>
                                 <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6 KQ</option>
                                 <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7 KQ</option>
                                 <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8 KQ</option>
                             </select>
-                            <input type="text" name="kq_input" placeholder="Nhập KQ (0-4 hoặc C/L)" required class="full-width">
-                            <button type="submit" class="full-width">Phân Tích</button>
+                            <button type="submit" class="btn-custom" id="analyze-btn">{% if current_kq %}Cập Nhật{% else %}Nhập KQ{% endif %}</button>
+                        </form>
+                    </div>
+                    <div class="update-btns {% if not current_kq %}hidden{% endif %}" id="update-btns">
+                        <div class="update-btn-group">
+                            <button type="button" class="update-btn" onclick="updateKQ('C')">C</button>
+                            <button type="button" class="update-btn" onclick="updateKQ('L')">L</button>
                         </div>
-                    </form>
-                </div>
-
-                <div id="cap-nhat" class="{% if state != 'cap_nhat' %}hidden{% endif %}">
-                    <form method="POST">
-                        <div class="input-group">
-                            <select name="update_kq_length" class="full-width">
-                                <option value="4" {% if update_kq_length == 4 %}selected{% endif %}>4 KQ</option>
-                                <option value="5" {% if update_kq_length == 5 %}selected{% endif %}>5 KQ</option>
-                                <option value="6" {% if update_kq_length == 6 %}selected{% endif %}>6 KQ</option>
-                                <option value="7" {% if update_kq_length == 7 %}selected{% endif %}>7 KQ</option>
-                                <option value="8" {% if update_kq_length == 8 %}selected{% endif %}>8 KQ</option>
-                            </select>
-                            <input type="text" name="real_kq_input" placeholder="Nhập KQ thực tế (0-4 hoặc C/L)" value="{{ real_kq_input }}" class="full-width">
-                            <button type="submit" class="full-width">Cập Nhật</button>
+                        <div class="update-btn-group">
+                            <button type="button" class="update-btn" onclick="updateKQ('0')">0</button>
+                            <button type="button" class="update-btn" onclick="updateKQ('1')">1</button>
+                            <button type="button" class="update-btn" onclick="updateKQ('2')">2</button>
+                            <button type="button" class="update-btn" onclick="updateKQ('3')">3</button>
+                            <button type="button" class="update-btn" onclick="updateKQ('4')">4</button>
                         </div>
-                    </form>
+                    </div>
                 </div>
+            </div>
 
-                <h2>Chuỗi KQ hiện tại:</h2>
-                <p class="current-kq">{{ current_kq | safe if current_kq else "Chưa có dữ liệu" }}</p>
-
-                {% if result %}
+            <!-- Tab Mô Phỏng -->
+            <div id="simulate-tab" class="{% if tab != 'simulate' %}hidden{% endif %}">
+                {% if sim_result and not sim_result.error %}
                     <div class="result-container">
                         <div class="result">
-                            {% if result.error %}
-                                <p>{{ result.error }}</p>
-                            {% else %}
-                                <h3>DỰ ĐOÁN: <span class="highlight">{{ result.prediction }} ({{ result.c_percentage if result.prediction == 'C' else result.l_percentage }}%)</span></h3>
-                                <p>Số lần khớp: <span class="highlight">{{ result.total_matches }}</span></p>
-                                <p>C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
-                                <p>L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
-                                <h4>Tỷ lệ số (0-4):</h4>
-                                <p>0: {{ result.number_stats['0'] }}% | 1: {{ result.number_stats['1'] }}% | 2: {{ result.number_stats['2'] }}% | 3: {{ result.number_stats['3'] }}% | 4: {{ result.number_stats['4'] }}%</p>
-                            {% endif %}
-                        </div>
-                        <div class="stats">
-                            <p class="title">HIỆN TẠI:</p>
-                            <p>WIN: {{ win_streak }} | LOSE: {{ lose_streak }}</p>
-                            <p class="title">TỔNG:</p>
-                            <p>WIN: {{ win_count }} | LOSE: {{ lose_count }}</p>
-                            <p>WIN max: {{ max_win_streak }} | LOSE max: {{ max_lose_streak }}</p>
-                        </div>
-                        <div class="history-stats">
-                            <p class="title">LỊCH SỬ:</p>
-                            <p>WIN max: {{ highest_win_streak }} | LOSE max: {{ highest_lose_streak }}</p>
+                            <h3>KẾT QUẢ:</h3>
+                            <p>KQ BAN ĐẦU: <span class="highlight">{{ sim_result.initial_kq }}</span></p>
+                            <p>TỔNG VÁN: <span class="highlight">{{ sim_result.win_count + sim_result.lose_count }}</span></p>
+                            <p>WIN: <span class="highlight">{{ sim_result.win_count }}</span> | LOSE: <span class="highlight">{{ sim_result.lose_count }}</span></p>
+                            <p>WIN max: <span class="highlight">{{ sim_result.max_win_streak }}</span> | LOSE max: <span class="highlight">{{ sim_result.max_lose_streak }}</span></p>
+                            <p>VỐN BAN ĐẦU: <span class="highlight">{{ sim_result.initial_capital }}</span> | CUỐI: <span class="highlight">{{ sim_result.final_capital }}</span></p>
+                            <p>LÃI/LỖ: <span class="highlight">{{ sim_result.profit_loss }}</span></p>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="showDetails" name="show_details" onchange="toggleDetails()">
+                                <label for="showDetails">Chi tiết từng ván</label>
+                            </div>
+                            <div class="details-content hidden" id="details-content">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Ván</th>
+                                            <th>Dự đoán</th>
+                                            <th>Thực tế</th>
+                                            <th>Cược</th>
+                                            <th>Lãi/Lỗ</th>
+                                            <th>Vốn</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sim in sim_result.results %}
+                                            <tr>
+                                                <td>{{ loop.index }}</td>
+                                                <td>{{ sim.prediction }}</td>
+                                                <td>{{ sim.actual }}</td>
+                                                <td>{{ sim.bet_amount }}</td>
+                                                <td>{{ sim.profit_loss }}</td>
+                                                <td>{{ sim.capital }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 {% endif %}
-            </div>
-
-            <!-- Tab Mô phỏng -->
-            <div id="simulate-tab" class="{% if tab != 'simulate' %}hidden{% endif %}">
-                <form method="POST">
-                    <div class="simulation-section">
-                        <div class="input-group-row">
-                            <select name="sim_kq_length" class="half-width">
+                <div class="custom-settings-content {% if not use_custom_settings %}hidden{% endif %}" id="custom-settings">
+                    {% for streak in range(5, 0, -1) %}
+                        <div class="streak-row">
+                            <div class="streak-half">
+                                <label>Thua {{ streak }} lần:</label>
+                                <input type="number" name="lose_streak_{{ streak }}" value="{{ lose_streak_bet_increase.get(streak, '') }}" min="0" step="0.1" placeholder="Mức cược tăng (VNĐ)" class="form-control">
+                            </div>
+                            <div class="streak-half">
+                                <label>Thắng {{ streak }} lần:</label>
+                                <input type="number" name="win_streak_{{ streak }}" value="{{ win_streak_bet_increase.get(streak, '') }}" min="0" step="0.1" placeholder="Mức cược tăng (VNĐ)" class="form-control">
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="input-group">
+                        <input type="number" name="initial_capital" value="{{ initial_capital }}" min="0" step="100" placeholder="Vốn ban đầu (VNĐ)" class="form-control">
+                        <input type="number" name="min_bet" value="{{ min_bet }}" min="0" step="1" placeholder="Mức cược tối thiểu (VNĐ)" class="form-control">
+                    </div>
+                </div>
+                <div class="fixed-bottom-input">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="useCustomSettings" name="use_custom_settings" {% if use_custom_settings %}checked{% endif %} onchange="toggleCustomSettings()">
+                        <label for="useCustomSettings">Dùng tùy chỉnh</label>
+                    </div>
+                    <div class="input-group">
+                        <form method="POST">
+                            <input type="text" name="sim_kq_input" placeholder="Nhập KQ (0-4/C/L)" required class="form-control">
+                            <select name="sim_kq_length" class="form-control">
                                 <option value="4" {% if sim_kq_length == 4 %}selected{% endif %}>4 KQ</option>
                                 <option value="5" {% if sim_kq_length == 5 %}selected{% endif %}>5 KQ</option>
                                 <option value="6" {% if sim_kq_length == 6 %}selected{% endif %}>6 KQ</option>
                                 <option value="7" {% if sim_kq_length == 7 %}selected{% endif %}>7 KQ</option>
                                 <option value="8" {% if sim_kq_length == 8 %}selected{% endif %}>8 KQ</option>
                             </select>
-                            <select name="sim_method" class="half-width">
-                                <option value="default" {% if sim_method == 'default' %}selected{% endif %}>Default</option>
-                                <option value="latest_pattern" {% if sim_method == 'latest_pattern' %}selected{% endif %}>Latest</option>
-                                <option value="frequency" {% if sim_method == 'frequency' %}selected{% endif %}>Freq</option>
-                            </select>
-                        </div>
-                        <div class="input-group-row">
-                            <input type="text" name="sim_kq_input" placeholder="Nhập KQ (0-4/C/L)" required class="full-width">
-                            <button type="submit" class="full-width">Mô phỏng</button>
-                        </div>
+                            <button type="submit" class="btn-custom">Mô Phỏng</button>
+                        </form>
                     </div>
-                    <div class="custom-settings-section {% if not use_custom_settings %}hidden{% endif %}">
-                        <div class="input-group-row">
-                            <input type="checkbox" name="use_custom_settings" {% if use_custom_settings %}checked{% endif %} onchange="this.form.submit()">
-                            <label>Dùng tùy chỉnh</label>
-                        </div>
-                        <div class="input-group-row">
-                            <input type="number" name="initial_capital" value="{{ initial_capital }}" min="0" step="100" placeholder="Vốn ban đầu (VNĐ)" class="half-width">
-                            <input type="number" name="min_bet" value="{{ min_bet }}" min="0" step="1" placeholder="Mức cược tối thiểu (VNĐ)" class="half-width">
-                        </div>
-                        <h4>Thua & Thắng liên tiếp:</h4>
-                        {% for streak in range(1, 6) %}
-                            <div class="streak-row">
-                                <div class="streak-half">
-                                    <label>Thua {{ streak }} lần:</label>
-                                    <input type="number" name="lose_streak_{{ streak }}" value="{{ lose_streak_bet_increase.get(streak, '') }}" min="0" step="0.1" placeholder="Hệ số" class="half-width">
-                                </div>
-                                <div class="streak-half">
-                                    <label>Thắng {{ streak }} lần:</label>
-                                    <input type="number" name="win_streak_{{ streak }}" value="{{ win_streak_bet_increase.get(streak, '') }}" min="0" step="0.1" placeholder="Hệ số" class="half-width">
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </form>
-
-                {% if sim_result %}
-                    <div class="result-container">
-                        <div class="result">
-                            {% if sim_result.error %}
-                                <p>{{ sim_result.error }}</p>
-                            {% else %}
-                                <h3>KẾT QUẢ:</h3>
-                                <p>KQ ban đầu: {{ sim_result.initial_kq }}</p>
-                                <p>Tổng ván: {{ sim_result.win_count + sim_result.lose_count }}</p>
-                                <p>WIN: {{ sim_result.win_count }} | LOSE: {{ sim_result.lose_count }}</p>
-                                <p>WIN max: {{ sim_result.max_win_streak }} | LOSE max: {{ sim_result.max_lose_streak }}</p>
-                                <p>Vốn ban đầu: {{ sim_result.initial_capital }} | Min bet: {{ sim_result.min_bet }} | Cuối: {{ sim_result.final_capital }}</p>
-                                <p>Lãi/Lỗ: {{ sim_result.profit_loss }}</p>
-                                <h4>Chi tiết ván:</h4>
-                                <div class="table-wrapper">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th class="visible-mobile">Ván</th>
-                                                <th class="hidden-mobile">KQ tra cứu</th>
-                                                <th class="visible-mobile">Dự đoán</th>
-                                                <th class="visible-mobile">Thực tế</th>
-                                                <th class="hidden-mobile">Mức cược</th>
-                                                <th class="visible-mobile">Lãi/Lỗ</th>
-                                                <th class="hidden-mobile">Vốn hiện tại</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for res in sim_result.results %}
-                                                <tr>
-                                                    <td class="visible-mobile">{{ loop.index }}</td>
-                                                    <td class="hidden-mobile">{{ res.used_kq }}</td>
-                                                    <td class="visible-mobile">{{ res.prediction }}</td>
-                                                    <td class="visible-mobile">{{ res.actual }}</td>
-                                                    <td class="hidden-mobile">{{ res.bet_amount }}</td>
-                                                    <td class="{% if res.profit_loss > 0 %}profit{% elif res.profit_loss < 0 %}loss{% endif %} visible-mobile">{{ res.profit_loss }}</td>
-                                                    <td class="hidden-mobile">{{ res.capital }}</td>
-                                                </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="simChart"></canvas>
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- Tab AI -->
-            <div id="ai-tab" class="{% if tab != 'ai' %}hidden{% endif %}">
-                <form method="POST">
-                    <div class="input-group">
-                        <select name="ai_kq_length" class="full-width">
-                            <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4 KQ</option>
-                            <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5 KQ</option>
-                            <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6 KQ</option>
-                            <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7 KQ</option>
-                            <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8 KQ</option>
-                        </select>
-                        <input type="text" name="ai_kq_input" placeholder="Nhập KQ (0-4/C/L)" required class="full-width">
-                        <button type="submit" name="ai_predict" class="full-width">Dự đoán</button>
-                    </div>
-                </form>
-
-                {% if ai_result %}
-                    <div class="result-container">
-                        <div class="result">
-                            {% if ai_result.error %}
-                                <p>{{ ai_result.error }}</p>
-                            {% else %}
-                                <h3>DỰ ĐOÁN: {{ ai_result.prediction }}</h3>
-                                <p>Độ tin cậy: {{ ai_result.confidence }}%</p>
-                                <p>Phương pháp: {{ ai_result.method }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="aiChart"></canvas>
-                    </div>
-                {% endif %}
+                </div>
             </div>
         </div>
-
-        <footer class="footer">
-            <p>KQ2_Tracker v1.0 © 2025</p>
-        </footer>
     </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <footer class="bottom-nav">
+        <form method="POST">
+            <button type="submit" name="tab" value="analyze" style="background: none; border: none; padding: 0; color: white; text-align: center; font-size: 1em;">
+                <img src="{{ url_for('static', filename='images/placeholder1.png') }}" alt="PHÂN TÍCH">
+                PHÂN TÍCH
+            </button>
+        </form>
+        <form method="POST">
+            <button type="submit" name="tab" value="simulate" style="background: none; border: none; padding: 0; color: white; text-align: center; font-size: 1em;">
+                <img src="{{ url_for('static', filename='images/placeholder2.png') }}" alt="MÔ PHỎNG">
+                MÔ PHỎNG
+            </button>
+        </form>
+        <form method="POST">
+            <button type="submit" name="home" style="background: none; border: none; padding: 0; color: white; text-align: center; font-size: 1em;">
+                <img src="{{ url_for('static', filename='images/home.png') }}" alt="HOME">
+                HOME
+            </button>
+        </form>
+        <a href="#3">
+            <img src="{{ url_for('static', filename='images/placeholder3.png') }}" alt="3">
+            3
+        </a>
+        <a href="#4">
+            <img src="{{ url_for('static', filename='images/placeholder4.png') }}" alt="4">
+            4
+        </a>
+    </footer>
+
     <script>
-        function toggleMenu() {
-            const navMenu = document.getElementById('navMenu');
-            navMenu.classList.toggle('active');
+        function toggleCustomSettings() {
+            const customContent = document.getElementById('custom-settings');
+            const checkbox = document.getElementById('useCustomSettings');
+            customContent.classList.toggle('hidden', !checkbox.checked);
+            customContent.querySelectorAll('input[type="number"]').forEach(input => input.disabled = !checkbox.checked);
         }
 
-        {% if sim_result and not sim_result.error %}
-            const simCtx = document.getElementById('simChart').getContext('2d');
-            const simLabels = Array.from({length: {{ sim_result.results|length }}}, (_, i) => i + 1);
-            const simData = [];
-            {% for res in sim_result.results %}
-                simData.push({{ '1' if res.prediction.split()[0] == res.actual else '-1' }});
-            {% endfor %}
+        function toggleDetails() {
+            const detailsContent = document.getElementById('details-content');
+            const checkbox = document.getElementById('showDetails');
+            detailsContent.classList.toggle('hidden', !checkbox.checked);
+        }
 
-            new Chart(simCtx, {
-                type: 'bar',
-                data: {
-                    labels: simLabels,
-                    datasets: [{
-                        label: 'Kết quả (WIN/LOSE)',
-                        data: simData,
-                        backgroundColor: function(context) {
-                            const value = context.dataset.data[context.dataIndex];
-                            return value === 1 ? 'rgba(34, 139, 34, 0.8)' : 'rgba(139, 0, 0, 0.8)';
-                        },
-                        borderColor: function(context) {
-                            const value = context.dataset.data[context.dataIndex];
-                            return value === 1 ? 'rgba(0, 100, 0, 1)' : 'rgba(100, 0, 0, 1)';
-                        },
-                        borderWidth: 1,
-                        barThickness: 20
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            min: -1,
-                            max: 1,
-                            ticks: {
-                                stepSize: 1,
-                                callback: value => value === 1 ? 'WIN' : value === -1 ? 'LOSE' : '0'
-                            },
-                            title: { display: true, text: 'Kết quả' }
-                        },
-                        x: { title: { display: true, text: 'Ván' } }
-                    },
-                    plugins: {
-                        legend: { position: 'top', labels: { font: { size: 14 } } },
-                        tooltip: { enabled: true }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeInOutQuad'
-                    }
-                }
-            });
-            simChart.height = 300;
-        {% endif %}
+        function updateKQ(value) {
+            const form = document.getElementById('analyze-form');
+            const input = document.getElementById('kq-input');
+            input.value = value;
+            form.submit();
+        }
+
+        window.onload = function() {
+            toggleCustomSettings();
+        };
     </script>
 </body>
 </html>

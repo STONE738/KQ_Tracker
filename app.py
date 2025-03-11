@@ -1,14 +1,15 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for
 import sqlite3
 import json
 import os
 from datetime import datetime
 from sample_data import get_sample_patterns
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'
 
-DATABASE = 'kq2_tracker.db'
+DATABASE = 'ai_tracker.db'
 
 def init_db():
     with sqlite3.connect(DATABASE) as conn:
@@ -28,6 +29,10 @@ def init_db():
                       pattern TEXT NOT NULL,
                       result TEXT NOT NULL,
                       timestamp TEXT NOT NULL)''')
+        c.execute('''CREATE TABLE IF NOT EXISTS users
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      username TEXT NOT NULL UNIQUE,
+                      password TEXT NOT NULL)''')
         
         c.execute("SELECT COUNT(*) FROM kq_patterns")
         if c.fetchone()[0] == 0:
@@ -162,9 +167,6 @@ def analyze_kq(kq_input, kq_length, db_patterns, method="default"):
     l_percentage = (total_l_count / total_matches) * 100 if total_matches > 0 else 0
     prediction = 'C' if c_percentage > l_percentage else 'L' if l_percentage > c_percentage else 'C'
 
-    print(f"Matches: {total_matches}, C: {total_c_count}, L: {total_l_count}")
-    print(f"C%: {c_percentage}, L%: {l_percentage}, Pred: {prediction}")
-
     last_prediction = prediction
     number_stats = calculate_number_stats(kq_list, db_patterns)
 
@@ -209,16 +211,16 @@ def simulate_game(kq_input, kq_length, db_patterns, method="default", initial_ca
         actual = kq_cl[i]
         prediction_with_percent = f"{prediction} {c_percentage if prediction == 'C' else l_percentage}%"
 
-        bet = bet_amount if bet_amount > 0 else (min_bet if min_bet > 0 else 0)
+        bet = min_bet
         if sim_lose_streak in lose_streak_conditions:
-            bet *= lose_streak_conditions[sim_lose_streak]
+            bet = lose_streak_conditions[sim_lose_streak]
         elif sim_win_streak in win_streak_conditions:
-            bet *= win_streak_conditions[sim_win_streak]
+            bet = win_streak_conditions[sim_win_streak]
 
         if capital < bet:
             bet = max(0, capital)
 
-        profit_loss = bet * 0.96 if prediction == actual else -bet
+        profit_loss = round(bet * 0.96) if prediction == actual else round(-bet)
         capital += profit_loss
 
         if prediction == actual:
@@ -236,9 +238,9 @@ def simulate_game(kq_input, kq_length, db_patterns, method="default", initial_ca
             'prediction': prediction_with_percent,
             'actual': actual,
             'used_kq': current_segment_input,
-            'bet_amount': round(bet, 2),
-            'profit_loss': round(profit_loss, 2),
-            'capital': round(capital, 2)
+            'bet_amount': bet,
+            'profit_loss': profit_loss,
+            'capital': capital
         })
 
         if capital < 0:
@@ -253,25 +255,18 @@ def simulate_game(kq_input, kq_length, db_patterns, method="default", initial_ca
         'initial_kq': kq_input,
         'initial_capital': initial_capital,
         'min_bet': min_bet,
-        'final_capital': round(capital, 2),
-        'profit_loss': round(capital - initial_capital, 2)
+        'final_capital': capital,
+        'profit_loss': capital - initial_capital
     }
-
-def ai_predict(kq_input, kq_length, db_patterns):
-    kq_list, kq_cl, format_type = standardize_kq(kq_input)
-    if not kq_cl:
-        return {'error': format_type}
-
-    if len(kq_cl) < kq_length:
-        return {'error': f'KQ chưa đủ {kq_length} kết quả.'}
-
-    return {'error': 'AI đang phát triển.'}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global current_kq, last_prediction, win_count, lose_count, win_streak, lose_streak, max_win_streak, max_lose_streak
 
     init_db()
+
+    if 'username' not in session:
+        return redirect(url_for('login'))
 
     db = get_db()
     c = db.cursor()
@@ -287,24 +282,24 @@ def index():
         session['state'] = 'phan_tich'
     if 'tab' not in session:
         session['tab'] = 'analyze'
+    if 'use_custom_settings' not in session:
+        session['use_custom_settings'] = False
 
     result = None
     sim_result = None
-    ai_result = None
     selected_kq_length = 4
     update_kq_length = 4
     sim_kq_length = session.get('sim_kq_length', 4)
     sim_method = session.get('sim_method', 'default')
     initial_capital = session.get('initial_capital', 0)
     min_bet = session.get('min_bet', 0)
-    bet_amount = session.get('bet_amount', 0)
     real_kq_input = ""
     lose_streak_bet_increase = session.get('lose_streak_bet_increase', {})
     win_streak_bet_increase = session.get('win_streak_bet_increase', {})
     use_custom_settings = session.get('use_custom_settings', False)
 
     if request.method == 'POST':
-        if 'new_game' in request.form:
+        if 'home' in request.form:  # Xử lý nút HOME
             current_kq = ""
             last_prediction = None
             win_count = 0
@@ -315,7 +310,8 @@ def index():
             max_lose_streak = 0
             session['state'] = 'phan_tich'
             session['tab'] = 'analyze'
-            return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, sim_kq_length=sim_kq_length, sim_method=sim_method, initial_capital=initial_capital, min_bet=min_bet, bet_amount=bet_amount, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'], tab=session['tab'], result=result, sim_result=sim_result, ai_result=ai_result, lose_streak_bet_increase=lose_streak_bet_increase, win_streak_bet_increase=win_streak_bet_increase, use_custom_settings=use_custom_settings)
+            session['use_custom_settings'] = False
+            return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, sim_kq_length=sim_kq_length, sim_method=sim_method, initial_capital=initial_capital, min_bet=min_bet, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'], tab=session['tab'], result=result, sim_result=sim_result, lose_streak_bet_increase=lose_streak_bet_increase, win_streak_bet_increase=win_streak_bet_increase, use_custom_settings=use_custom_settings, username=session['username'])
 
         if 'tab' in request.form:
             session['tab'] = request.form['tab']
@@ -398,6 +394,8 @@ def index():
             session['sim_method'] = sim_method
             session['initial_capital'] = initial_capital
             session['min_bet'] = min_bet
+            session['lose_streak_bet_increase'] = lose_streak_bet_increase
+            session['win_streak_bet_increase'] = win_streak_bet_increase
 
             if sim_kq_input:
                 sim_result = simulate_game(sim_kq_input, sim_kq_length, db_patterns, sim_method, initial_capital if use_custom_settings else 0, min_bet if use_custom_settings else 0, 0, lose_streak_bet_increase if use_custom_settings else None, win_streak_bet_increase if use_custom_settings else None)
@@ -406,14 +404,46 @@ def index():
                               (sim_kq_input, json.dumps(sim_result), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                     db.commit()
 
-        if 'ai_predict' in request.form:
-            ai_kq_input = request.form.get('ai_kq_input', '')
-            ai_kq_length = int(request.form.get('ai_kq_length', 4))
-            if ai_kq_input:
-                ai_result = ai_predict(ai_kq_input, ai_kq_length, db_patterns)
-
     db.close()
-    return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, sim_kq_length=sim_kq_length, sim_method=sim_method, initial_capital=initial_capital, min_bet=min_bet, bet_amount=0, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'], tab=session['tab'], result=result, sim_result=sim_result, ai_result=ai_result, lose_streak_bet_increase=lose_streak_bet_increase, win_streak_bet_increase=win_streak_bet_increase, use_custom_settings=use_custom_settings)
+    return render_template('index.html', current_kq=current_kq, selected_kq_length=selected_kq_length, update_kq_length=update_kq_length, sim_kq_length=sim_kq_length, sim_method=sim_method, initial_capital=initial_capital, min_bet=min_bet, real_kq_input=real_kq_input, win_count=win_count, lose_count=lose_count, win_streak=win_streak, lose_streak=lose_streak, max_win_streak=max_win_streak, max_lose_streak=max_lose_streak, highest_win_streak=highest_win_streak, highest_lose_streak=highest_lose_streak, state=session['state'], tab=session['tab'], result=result, sim_result=sim_result, lose_streak_bet_increase=lose_streak_bet_increase, win_streak_bet_increase=win_streak_bet_increase, use_custom_settings=use_custom_settings, username=session['username'])
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        db = get_db()
+        c = db.cursor()
+        c.execute("SELECT username FROM users WHERE username = ?", (username,))
+        if c.fetchone():
+            db.close()
+            return "Tên người dùng đã tồn tại!", 400
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, generate_password_hash(password)))
+        db.commit()
+        db.close()
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        db = get_db()
+        c = db.cursor()
+        c.execute("SELECT * FROM users WHERE username = ?", (username,))
+        user = c.fetchone()
+        db.close()
+        if user and check_password_hash(user['password'], password):
+            session['username'] = username
+            return redirect(url_for('index'))
+        return "Đăng nhập thất bại!", 401
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
