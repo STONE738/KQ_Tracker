@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#4B0082">
     <title>Ai_Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -18,226 +18,114 @@
             flex-direction: column;
         }
         .container {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
         }
         .header {
-            background-color: #4B0082;
-            padding: 10px;
-            border-radius: 15px;
+            background: #4B0082;
+            padding: 5px;
+            border-radius: 10px;
             text-align: center;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header span {
-            font-size: 1.1em;
+            font-size: 0.9em;
         }
         .header a {
             color: #FF8C00;
             text-decoration: none;
-            margin-left: 10px;
+            margin: 0 5px;
         }
         .header a:hover {
             text-decoration: underline;
         }
-        .main-content {
-            padding: 20px 0;
+        .tab-content {
             flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            padding: 10px 0;
         }
-        .kq-display {
-            margin: 10px 0;
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #FF8C00;
+            border-radius: 10px;
             padding: 10px;
-            border: 2px solid #FF8C00;
-            border-radius: 15px;
-            background: rgba(255, 255, 251, 0.05);
-            text-align: center;
+            margin-bottom: 10px;
+            font-size: 0.9em;
         }
         .input-group {
-            margin: 10px 0;
+            margin: 5px 0;
             display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
             justify-content: center;
-            gap: 10px;
-            align-items: center;
-            padding: 10px;
         }
         .form-control {
             background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #FF8C00;
+            border: 1px solid #FF8C00;
             color: white;
-            border-radius: 25px;
-            padding: 10px;
-            text-align: center;
-            width: 80px;
+            border-radius: 15px;
+            padding: 8px;
+            font-size: 0.9em;
+            width: 100px;
         }
         .btn-custom {
-            background-color: #FF8C00;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        .btn-custom:hover {
-            background-color: #FFA500;
-        }
-        .update-btns {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        .update-btn-group {
-            display: flex;
-            gap: 5px;
-        }
-        .update-btn {
-            background-color: #FF8C00;
+            background: #FF8C00;
             color: white;
             border: none;
             border-radius: 15px;
-            padding: 5px 10px;
-            cursor: pointer;
+            padding: 8px 15px;
             font-size: 0.9em;
         }
-        .update-btn:hover {
-            background-color: #FFA500;
-        }
-        .result-container {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border: 2px solid #FF8C00;
-            border-radius: 15px;
-            margin-bottom: 15px;
-        }
-        .result h3 {
-            color: #FF4500;
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .result p {
-            margin: 5px 0;
-            font-size: 1.1em;
-        }
-        .result .highlight {
-            color: #FF4500;
-            font-weight: bold;
+        .btn-custom:hover {
+            background: #FFA500;
         }
         .prediction-circle {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            margin: 20px 0;
+            margin: 10px 0;
             position: sticky;
-            bottom: 150px;
+            bottom: 80px;
         }
         .circle {
-            width: 100px;
-            height: 100px;
-            border: 3px solid yellow;
+            width: 80px;
+            height: 80px;
+            border: 2px solid yellow;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2em; /* Tăng 100% */
-            font-weight: bold;
-            color: #8B0000; /* Đỏ đậm */
-        }
-        .circle-percentage {
-            color: #8B0000; /* Đỏ đậm */
-            font-size: 1.6em; /* Tăng 100% */
-            margin-top: 10px;
-            font-weight: bold;
+            font-size: 1.5em;
+            color: #8B0000;
         }
         .bottom-nav {
-            background-color: #4B0082;
+            background: #4B0082;
             position: fixed;
             bottom: 0;
             width: 100%;
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
+            padding: 5px 0;
             border-top: 1px solid #5A1D99;
         }
-        .bottom-nav a, .bottom-nav form {
+        .bottom-nav button, .bottom-nav a {
             color: white;
             text-decoration: none;
             text-align: center;
-            font-size: 1em;
-            text-transform: uppercase;
+            font-size: 0.8em;
             background: none;
             border: none;
             padding: 0;
             width: 20%;
         }
         .bottom-nav img {
-            width: 24px;
-            height: 24px;
-            display: block;
-            margin: 0 auto 5px;
+            width: 20px;
+            height: 20px;
+            margin-bottom: 3px;
         }
         .hidden {
             display: none;
-        }
-        .custom-settings-content {
-            margin: 10px 0;
-            padding: 10px;
-            border: 2px solid #FF8C00;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-        }
-        .streak-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .streak-half {
-            flex: 1;
-            margin-right: 10px;
-        }
-        .streak-half:last-child {
-            margin-right: 0;
-        }
-        .fixed-bottom-input {
-            position: sticky;
-            bottom: 60px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #FF8C00;
-            padding: 5px;
-            text-align: center;
-        }
-        th {
-            background-color: #5A1D99;
-        }
-        .checkbox-group {
-            margin: 10px 0;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
         }
     </style>
 </head>
@@ -250,193 +138,149 @@
                 <a href="{{ url_for('login') }}">Đăng nhập</a> | <a href="{{ url_for('register') }}">Đăng ký</a>
             {% endif %}
         </header>
-        <div class="kq-display">
-            <p>Chuỗi KQ hiện tại: <span class="highlight">{{ current_kq | safe if current_kq else "Chưa có dữ liệu" }}</span></p>
-        </div>
-
-        <div class="main-content">
+        <div class="tab-content">
             <!-- Tab Phân Tích -->
             <div id="analyze-tab" class="{% if tab != 'analyze' %}hidden{% endif %}">
                 {% if result and not result.error %}
-                    <div class="result-container">
-                        <p>SỐ LẦN KHỚP: <span class="highlight">{{ result.total_matches }}</span></p>
+                    <div class="card">
+                        <p>Số lần khớp: <span class="highlight">{{ result.total_matches }}</span></p>
                         <p>C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
                         <p>L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
-                        <p>Tỷ lệ số (0-4): 0: <span class="highlight">{{ result.number_stats['0'] }}%</span> | 1: <span class="highlight">{{ result.number_stats['1'] }}%</span> | 2: <span class="highlight">{{ result.number_stats['2'] }}%</span> | 3: <span class="highlight">{{ result.number_stats['3'] }}%</span> | 4: <span class="highlight">{{ result.number_stats['4'] }}%</span></p>
+                        <p>Tỷ lệ số: 0: {{ result.number_stats['0'] }}% | 1: {{ result.number_stats['1'] }}% | 2: {{ result.number_stats['2'] }}% | 3: {{ result.number_stats['3'] }}% | 4: {{ result.number_stats['4'] }}%</p>
                     </div>
                 {% endif %}
                 <div class="prediction-circle">
                     <div class="circle">{{ result.prediction if result and not result.error else "C/L" }}</div>
-                    <div class="circle-percentage">{{ (result.c_percentage if result.prediction == 'C' else result.l_percentage) if result and not result.error else "0%" }}</div>
                 </div>
-                <div class="fixed-bottom-input">
-                    <div class="input-group">
-                        <form method="POST" id="analyze-form">
-                            <input type="text" name="kq_input" placeholder="Nhập KQ (0-4 hoặc C/L)" required class="form-control" id="kq-input">
-                            <select name="kq_length" class="form-control">
-                                <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4 KQ</option>
-                                <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5 KQ</option>
-                                <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6 KQ</option>
-                                <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7 KQ</option>
-                                <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8 KQ</option>
-                            </select>
-                            <button type="submit" class="btn-custom" id="analyze-btn">{% if current_kq %}Cập Nhật{% else %}Nhập KQ{% endif %}</button>
-                        </form>
-                    </div>
-                    <div class="update-btns {% if not current_kq %}hidden{% endif %}" id="update-btns">
-                        <div class="update-btn-group">
-                            <button type="button" class="update-btn" onclick="updateKQ('C')">C</button>
-                            <button type="button" class="update-btn" onclick="updateKQ('L')">L</button>
-                        </div>
-                        <div class="update-btn-group">
-                            <button type="button" class="update-btn" onclick="updateKQ('0')">0</button>
-                            <button type="button" class="update-btn" onclick="updateKQ('1')">1</button>
-                            <button type="button" class="update-btn" onclick="updateKQ('2')">2</button>
-                            <button type="button" class="update-btn" onclick="updateKQ('3')">3</button>
-                            <button type="button" class="update-btn" onclick="updateKQ('4')">4</button>
-                        </div>
-                    </div>
+                <div class="input-group">
+                    <form method="POST">
+                        <input type="text" name="kq_input" value="{{ current_kq if current_kq else '' }}" placeholder="Nhập KQ" class="form-control">
+                        <select name="kq_length" class="form-control">
+                            <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4</option>
+                            <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5</option>
+                            <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6</option>
+                            <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7</option>
+                            <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8</option>
+                        </select>
+                        <button type="submit" class="btn-custom">Phân tích</button>
+                    </form>
                 </div>
             </div>
 
             <!-- Tab Mô Phỏng -->
             <div id="simulate-tab" class="{% if tab != 'simulate' %}hidden{% endif %}">
                 {% if sim_result and not sim_result.error %}
-                    <div class="result-container">
-                        <div class="result">
-                            <h3>KẾT QUẢ:</h3>
-                            <p>KQ BAN ĐẦU: <span class="highlight">{{ sim_result.initial_kq }}</span></p>
-                            <p>TỔNG VÁN: <span class="highlight">{{ sim_result.win_count + sim_result.lose_count }}</span></p>
-                            <p>WIN: <span class="highlight">{{ sim_result.win_count }}</span> | LOSE: <span class="highlight">{{ sim_result.lose_count }}</span></p>
-                            <p>WIN max: <span class="highlight">{{ sim_result.max_win_streak }}</span> | LOSE max: <span class="highlight">{{ sim_result.max_lose_streak }}</span></p>
-                            <p>VỐN BAN ĐẦU: <span class="highlight">{{ sim_result.initial_capital }}</span> | CUỐI: <span class="highlight">{{ sim_result.final_capital }}</span></p>
-                            <p>LÃI/LỖ: <span class="highlight">{{ sim_result.profit_loss }}</span></p>
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="showDetails" name="show_details" onchange="toggleDetails()">
-                                <label for="showDetails">Chi tiết từng ván</label>
-                            </div>
-                            <div class="details-content hidden" id="details-content">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Ván</th>
-                                            <th>Dự đoán</th>
-                                            <th>Thực tế</th>
-                                            <th>Cược</th>
-                                            <th>Lãi/Lỗ</th>
-                                            <th>Vốn</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for sim in sim_result.results %}
-                                            <tr>
-                                                <td>{{ loop.index }}</td>
-                                                <td>{{ sim.prediction }}</td>
-                                                <td>{{ sim.actual }}</td>
-                                                <td>{{ sim.bet_amount }}</td>
-                                                <td>{{ sim.profit_loss }}</td>
-                                                <td>{{ sim.capital }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div class="card">
+                        <p>KQ ban đầu: <span class="highlight">{{ sim_result.initial_kq }}</span></p>
+                        <p>Tổng ván: <span class="highlight">{{ sim_result.win_count + sim_result.lose_count }}</span></p>
+                        <p>Win: <span class="highlight">{{ sim_result.win_count }}</span> | Lose: <span class="highlight">{{ sim_result.lose_count }}</span></p>
+                        <p>Vốn: <span class="highlight">{{ sim_result.initial_capital }}</span> → <span class="highlight">{{ sim_result.final_capital }}</span></p>
+                        <p>Lãi/Lỗ: <span class="highlight">{{ sim_result.profit_loss }}</span></p>
                     </div>
                 {% endif %}
-                <div class="custom-settings-content {% if not use_custom_settings %}hidden{% endif %}" id="custom-settings">
-                    {% for streak in range(5, 0, -1) %}
-                        <div class="streak-row">
-                            <div class="streak-half">
-                                <label>Thua {{ streak }} lần:</label>
-                                <input type="number" name="lose_streak_{{ streak }}" value="{{ lose_streak_bet_increase.get(streak, '') }}" min="0" step="0.1" placeholder="Mức cược tăng (VNĐ)" class="form-control">
-                            </div>
-                            <div class="streak-half">
-                                <label>Thắng {{ streak }} lần:</label>
-                                <input type="number" name="win_streak_{{ streak }}" value="{{ win_streak_bet_increase.get(streak, '') }}" min="0" step="0.1" placeholder="Mức cược tăng (VNĐ)" class="form-control">
-                            </div>
-                        </div>
-                    {% endfor %}
-                    <div class="input-group">
-                        <input type="number" name="initial_capital" value="{{ initial_capital }}" min="0" step="100" placeholder="Vốn ban đầu (VNĐ)" class="form-control">
-                        <input type="number" name="min_bet" value="{{ min_bet }}" min="0" step="1" placeholder="Mức cược tối thiểu (VNĐ)" class="form-control">
-                    </div>
-                </div>
-                <div class="fixed-bottom-input">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="useCustomSettings" name="use_custom_settings" {% if use_custom_settings %}checked{% endif %} onchange="toggleCustomSettings()">
-                        <label for="useCustomSettings">Dùng tùy chỉnh</label>
-                    </div>
-                    <div class="input-group">
-                        <form method="POST">
-                            <input type="text" name="sim_kq_input" placeholder="Nhập KQ (0-4/C/L)" required class="form-control">
-                            <select name="sim_kq_length" class="form-control">
-                                <option value="4" {% if sim_kq_length == 4 %}selected{% endif %}>4 KQ</option>
-                                <option value="5" {% if sim_kq_length == 5 %}selected{% endif %}>5 KQ</option>
-                                <option value="6" {% if sim_kq_length == 6 %}selected{% endif %}>6 KQ</option>
-                                <option value="7" {% if sim_kq_length == 7 %}selected{% endif %}>7 KQ</option>
-                                <option value="8" {% if sim_kq_length == 8 %}selected{% endif %}>8 KQ</option>
-                            </select>
-                            <button type="submit" class="btn-custom">Mô Phỏng</button>
-                        </form>
-                    </div>
+                <div class="input-group">
+                    <form method="POST">
+                        <input type="text" name="sim_kq_input" placeholder="Nhập KQ" class="form-control">
+                        <select name="sim_kq_length" class="form-control">
+                            <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4</option>
+                            <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5</option>
+                            <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6</option>
+                            <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7</option>
+                            <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8</option>
+                        </select>
+                        <button type="submit" class="btn-custom">Mô phỏng</button>
+                    </form>
                 </div>
             </div>
+
+            <!-- Tab Cài đặt (Chỉ Admin) -->
+            {% if role == 'admin' %}
+            <div id="settings-tab" class="{% if tab != 'settings' %}hidden{% endif %}">
+                <div class="card">
+                    <form method="POST" action="{{ url_for('save_settings') }}">
+                        <div class="input-group">
+                            <select name="background" class="form-control">
+                                <option value="gradient" {% if settings['background'] == 'gradient' %}selected{% endif %}>Gradient</option>
+                                <option value="solid" {% if settings['background'] == 'solid' %}selected{% endif %}>Solid</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <select name="font_size" class="form-control">
+                                <option value="small" {% if settings['font_size'] == 'small' %}selected{% endif %}>Nhỏ</option>
+                                <option value="medium" {% if settings['font_size'] == 'medium' %}selected{% endif %}>Trung bình</option>
+                                <option value="large" {% if settings['font_size'] == 'large' %}selected{% endif %}>Lớn</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <select name="circle_position" class="form-control">
+                                <option value="top" {% if settings['circle_position'] == 'top' %}selected{% endif %}>Top</option>
+                                <option value="middle" {% if settings['circle_position'] == 'middle' %}selected{% endif %}>Middle</option>
+                                <option value="bottom" {% if settings['circle_position'] == 'bottom' %}selected{% endif %}>Bottom</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-custom">Lưu</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
-
     <footer class="bottom-nav">
         <form method="POST">
-            <button type="submit" name="tab" value="analyze" style="background: none; border: none; padding: 0; color: white; text-align: center; font-size: 1em;">
-                <img src="{{ url_for('static', filename='images/placeholder1.png') }}" alt="PHÂN TÍCH">
-                PHÂN TÍCH
+            <button type="submit" name="tab" value="analyze">
+                <img src="{{ url_for('static', filename='images/placeholder1.png') }}" alt="Phân tích">
+                Phân tích
             </button>
         </form>
         <form method="POST">
-            <button type="submit" name="tab" value="simulate" style="background: none; border: none; padding: 0; color: white; text-align: center; font-size: 1em;">
-                <img src="{{ url_for('static', filename='images/placeholder2.png') }}" alt="MÔ PHỎNG">
-                MÔ PHỎNG
+            <button type="submit" name="tab" value="simulate">
+                <img src="{{ url_for('static', filename='images/placeholder2.png') }}" alt="Mô phỏng">
+                Mô phỏng
             </button>
         </form>
+        {% if role == 'admin' %}
         <form method="POST">
-            <button type="submit" name="home" style="background: none; border: none; padding: 0; color: white; text-align: center; font-size: 1em;">
-                <img src="{{ url_for('static', filename='images/home.png') }}" alt="HOME">
-                HOME
+            <button type="submit" name="tab" value="settings">
+                <img src="{{ url_for('static', filename='images/placeholder3.png') }}" alt="Cài đặt">
+                Cài đặt
             </button>
         </form>
-        <a href="#3">
+        <a href="{{ url_for('manage_users') }}">
+            <img src="{{ url_for('static', filename='images/placeholder4.png') }}" alt="Quản lý">
+            Quản lý
+        </a>
+        {% else %}
+        <button disabled>
+            <img src="{{ url_for('static', filename='images/home.png') }}" alt="Home">
+            Home
+        </button>
+        <button disabled>
             <img src="{{ url_for('static', filename='images/placeholder3.png') }}" alt="3">
             3
-        </a>
-        <a href="#4">
+        </button>
+        <button disabled>
             <img src="{{ url_for('static', filename='images/placeholder4.png') }}" alt="4">
             4
-        </a>
+        </button>
+        {% endif %}
     </footer>
-
     <script>
-        function toggleCustomSettings() {
-            const customContent = document.getElementById('custom-settings');
-            const checkbox = document.getElementById('useCustomSettings');
-            customContent.classList.toggle('hidden', !checkbox.checked);
-            customContent.querySelectorAll('input[type="number"]').forEach(input => input.disabled = !checkbox.checked);
-        }
-
-        function toggleDetails() {
-            const detailsContent = document.getElementById('details-content');
-            const checkbox = document.getElementById('showDetails');
-            detailsContent.classList.toggle('hidden', !checkbox.checked);
-        }
-
-        function updateKQ(value) {
-            const form = document.getElementById('analyze-form');
-            const input = document.getElementById('kq-input');
-            input.value = value;
-            form.submit();
-        }
-
         window.onload = function() {
-            toggleCustomSettings();
+            const settings = {{ settings | tojson }};
+            if (settings) {
+                const background = settings.background || 'gradient';
+                const fontSize = settings.font_size || 'medium';
+                const circlePosition = settings.circle_position || 'middle';
+                if (background === 'solid') document.body.style.background = '#1E1A3C';
+                const fontSizes = { small: '0.8em', medium: '0.9em', large: '1.1em' };
+                document.querySelectorAll('p, label, select, button, input').forEach(el => {
+                    el.style.fontSize = fontSizes[fontSize] || '0.9em';
+                });
+                const circle = document.querySelector('.prediction-circle');
+                if (circlePosition === 'top') circle.style.bottom = '200px';
+                else if (circlePosition === 'middle') circle.style.bottom = '80px';
+                else circle.style.bottom = '0';
+            }
         };
     </script>
 </body>
