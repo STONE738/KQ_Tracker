@@ -2,86 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - Ai_Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: url('{{ url_for("static", filename="images/login-background.jpg") }}') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
+            background: linear-gradient(to bottom, #4B0082, #1E1A3C);
+            color: white;
+            font-family: 'Roboto', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 0;
         }
-        .container {
-            background: rgba(0, 0, 0, 0.7);
+        .login-container {
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #FF8C00;
+            border-radius: 15px;
             padding: 20px;
-            border-radius: 10px;
             text-align: center;
-            width: 90%;
-            max-width: 350px;
         }
-        .input-group {
-            margin-bottom: 15px;
+        .form-group {
+            margin: 15px 0;
         }
         .form-control {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             border: 1px solid #FF8C00;
             color: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 10px;
+            width: 200px;
             font-size: 0.9em;
         }
         .btn-custom {
-            background-color: #FF8C00;
+            background: #FF8C00;
             color: white;
             border: none;
-            border-radius: 15px;
-            width: 100%;
-            padding: 10px;
+            border-radius: 20px;
+            padding: 10px 20px;
             font-size: 0.9em;
+            transition: background 0.3s;
         }
         .btn-custom:hover {
-            background-color: #FFA500;
+            background: #FFA500;
         }
-        .login-header {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: white;
-        }
-        p a {
-            color: #FF8C00;
-            text-decoration: none;
-            font-size: 0.9em;
-        }
-        p a:hover {
-            text-decoration: underline;
+        .flash-message {
+            background: #32CD32;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="login-header">Chào mừng đến với Ai_Tracker</div>
-        <form method="POST">
-            <div class="input-group">
-                <input type="text" name="username" placeholder="Tên người dùng" class="form-control" required>
-            </div>
-            <div class="input-group">
-                <input type="password" name="password" placeholder="Mật khẩu" class="form-control" required>
-            </div>
-            <button type="submit" class="btn-custom">Đăng nhập</button>
-        </form>
-        <p>Chưa có tài khoản? <a href="{{ url_for('register') }}">Đăng ký</a></p>
+    <div class="login-container">
+        <h2>Đăng nhập</h2>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
-                    <p style="color: red;">{{ message }}</p>
+                    <div class="flash-message">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
+        <form method="POST">
+            <div class="form-group">
+                <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
+            </div>
+            <button type="submit" class="btn-custom">Đăng nhập</button>
+        </form>
     </div>
 </body>
 </html>

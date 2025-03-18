@@ -1,0 +1,703 @@
+body {
+    background: #0F0C2F;
+    color: #FFFFFF;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.container {
+    width: 375px;
+    padding: 10px;
+    padding-bottom: 120px;
+    position: relative;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 375px;
+    background: #0F0C2F;
+    padding: 10px 20px;
+    z-index: 1001;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.navbar img {
+    height: 40px;
+    margin-left: -10px;
+    cursor: pointer;
+}
+
+.login-btn {
+    background: #FFA500;
+    border: none;
+    padding: 5px 10px;
+    color: #FFFFFF;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    margin-right: -10px;
+}
+
+.login-btn:hover {
+    background: #FF8C00;
+}
+
+.logout-text {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: -10px;
+}
+
+.logout-text .greeting {
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.welcome-text {
+    color: #FFFFFF;
+}
+.logout-link {
+    color: #FF0000;
+    cursor: pointer;
+}
+
+.main-lobby {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 20px 0;
+    margin-top: 70px;
+}
+
+.lobby-item {
+    background: #2F2F2F;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    height: 90px;
+}
+
+.lobby-item:hover {
+    background: #3A3A3A;
+}
+
+.lobby-item-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lobby-item-content i {
+    color: #00CED1;
+    font-size: 1.2em;
+}
+
+.lobby-item-text h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.lobby-item-text p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.lobby-item img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+}
+
+.tab-content {
+    display: none;
+    padding: 0px 0;
+    margin-top: 70px;
+}
+
+.sub-tab-content {
+    display: none;
+}
+
+.sub-tab-details {
+    display: none;
+}
+
+.header {
+    padding: 5px 10px;
+    background: #0F0C2F;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    position: fixed;
+    top: 60px;
+    width: 375px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 700;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    color: #00CED1;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+/* Điều chỉnh prediction-box */
+.prediction-box {
+    position: fixed;
+    top: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 345px;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    background: transparent;
+}
+
+/* Hình chữ nhật bo góc cho dự đoán */
+.prediction-rectangle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+    height: 150px;
+    border: 3px solid #FFA500;
+    border-radius: 35px;
+    color: #FFFFFF;
+    font-size: 1.5em;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+    padding: 1px;
+}
+
+.prediction-text {
+    font-size: 3em;
+    margin: 0;
+}
+
+.prediction-rate {
+    font-size: 0.8em;
+    color: #FFA500;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.prediction-circle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: #D8BFD8;
+    border: 3px solid #FFA500;
+    border-radius: 50%;
+    color: #FFFFFF;
+    font-size: 1.8em;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+}
+
+.prediction-circle .prediction-text {
+    font-size: 1.8em;
+}
+
+.prediction-circle::after {
+    content: attr(data-percentage);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6em;
+    color: #FFA500;
+    font-weight: 700;
+}
+
+/* Điều chỉnh result-card */
+.result-card {
+    background: #1E1A3C;
+    padding: 2px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    margin-top: -15px;
+    margin-bottom: 10px;
+    text-align: left;
+    position: fixed;
+    top: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 345px;
+    border: 2px solid #FFA500;
+    height: 180px;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 10px;
+    border: none;
+}
+
+.result-section, .stats-section {
+    flex: 1;
+    padding: 5px;
+}
+
+.stats-section {
+    font-size: 10px;
+    border-left: 1px solid #ccc;
+    padding-left: 10px;
+}
+
+.stats-section p {
+    margin: 1px 0;
+}
+
+.stats-section hr {
+    margin: 3px 0;
+    border: 0;
+    border-top: 1px solid #ccc;
+}
+
+.result-section p {
+    margin: 2px 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #E0E0E0;
+    padding-left: 2px;
+}
+
+.highlight {
+    color: #FFD700;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* Điều chỉnh current-kq-container */
+.current-kq-container {
+    background: #2F2F2F;
+    padding: 2px;
+    border-radius: 10px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+    margin-top: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 345px;
+    max-height: 50px;
+    overflow-x: auto;
+    white-space: nowrap;
+    display: flex;
+}
+
+.current-kq {
+    font-size: 14px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.current-kq-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 5px;
+    justify-content: center;
+}
+
+.current-kq-row span {
+    display: inline-block;
+}
+
+/* Điều chỉnh input-card */
+.input-card {
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 375px;
+    background: #2F2F2F;
+    padding: 5px;
+    border-top: 1px solid #FFA500;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.input-group .form-control {
+    padding: 5px;
+    border: 1px solid #FFA500;
+    background: #0F0C2F;
+    color: #FFFFFF;
+    border-radius: 5px;
+    font-size: 12px;
+    width: 300px !important;
+}
+
+.input-group #chanle-kq-length {
+    width: 75px !important;
+}
+
+.btn-custom {
+    background: #FFA500;
+    border: none;
+    padding: 5px 10px;
+    color: #FFFFFF;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    width: 245px;
+    margin-top: 5px;
+}
+
+.btn-custom:hover {
+    background: #FF8C00;
+}
+
+.result-buttons {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.result-buttons button {
+    padding: 3px 6px;
+    background: #FFA500;
+    border: none;
+    color: #FFFFFF;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.result-buttons button:hover {
+    background: #FF8C00;
+}
+
+/* Điều chỉnh nav-bottom */
+.nav-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 375px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    background: #1E1A3C;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.nav-bottom a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.nav-bottom a:hover {
+    color: #FFA500;
+}
+
+/* Sửa lỗi modal trên giao diện điện thoại */
+.login-modal, .betting-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #2F2F2F;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1001;
+    border: 2px solid #FFA500;
+    width: 320px; /* Giới hạn chiều rộng để vừa màn 375px */
+    max-width: 90%; /* Đảm bảo không vượt quá màn hình */
+    box-sizing: border-box; /* Bao gồm padding và border trong chiều rộng */
+    overflow-x: hidden; /* Tránh thanh cuộn ngang */
+}
+
+.login-modal h3, .betting-modal h3 {
+    margin: 0 0 15px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.close-btn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #FFA500;
+    font-size: 1.3em;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #FFA500;
+    background: #0F0C2F;
+    color: #FFFFFF;
+    border-radius: 5px;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+
+.form-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.form-links a {
+    color: #FFA500;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.form-links a:hover {
+    text-decoration: underline;
+}
+
+/* Thêm cấu trúc 2 cột cho betting-modal */
+.betting-modal .form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.betting-modal .form-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.betting-modal .form-group {
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+.betting-modal .form-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 5px;
+}
+
+.betting-modal .form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #FFA500;
+    background: #0F0C2F;
+    color: #FFFFFF;
+    border-radius: 5px;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+
+.betting-modal .btn-custom {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.betting-modal .form-capital {
+    margin-bottom: 10px;
+}
+
+.betting-modal .orange-line {
+    border: 0;
+    height: 1px;
+    background: #FFA500;
+    margin: 10px 0;
+}
+
+.betting-modal .form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.betting-modal .form-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.betting-modal .form-group {
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+.betting-modal .form-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 5px;
+}
+
+.betting-modal .form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #FFA500;
+    background: #0F0C2F;
+    color: #FFFFFF;
+    border-radius: 5px;
+    font-size: 12px;
+    box-sizing: border-box;
+}
+
+.betting-modal .btn-custom {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+/* Thêm CSS riêng cho trang mô phỏng */
+.simulate-result-card {
+    margin-top: 10px; 
+    
+}
+
+.simulate-result-card h3 {
+    font-size: 100%; 
+}
+
+#sim-details {
+    display: none;
+    margin-top: 5px;
+    padding: 5px;
+    background: #2F2F2F;
+    border-radius: 5px;
+    font-size: 10px;
+    max-height: 200px; /* Tăng để hiển thị 10 hàng */
+    overflow-y: auto;
+}
+
+#sim-details p {
+    margin: 2px 0;
+}
+
+#sim-details table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #2F2F2F;
+    color: #FFFFFF;
+    font-size: 10px;
+}
+
+#sim-details th, #sim-details td {
+    padding: 5px;
+    border: 1px solid #FFA500;
+    text-align: center;
+}
+
+#sim-details th {
+    background: #1A1A2E;
+    font-weight: 700;
+}
+
+#sim-details tr:nth-child(even) {
+    background: #0F0C2F;
+}
+
+/* CSS riêng cho phần tổng kết mô phỏng */
+#simulate-card {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background-color: #1a1a2e;
+    color: #fff;
+    padding: 2px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Đảm bảo không ảnh hưởng đến các phần khác */
+.tab-content, .sub-tab-content, .sub-tab-details, .prediction-box {
+    position: relative;
+    z-index: 1;
+}
+
+/* Giữ nguyên các style khác nếu có */

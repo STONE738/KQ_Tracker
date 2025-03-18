@@ -1,1 +1,0 @@
-// Đã tích hợp trực tiếp hàm toggleMenu() trong index.html

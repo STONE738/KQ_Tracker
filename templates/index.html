@@ -3,285 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#4B0082">
+    <meta name="theme-color" content="#0F0C2F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/images/Ai_tracker-logo.jpg">
     <title>Ai_Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(to bottom, #4B0082, #1E1A3C);
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .container {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .header {
-            background: #4B0082;
-            padding: 5px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 0.9em;
-        }
-        .header a {
-            color: #FF8C00;
-            text-decoration: none;
-            margin: 0 5px;
-        }
-        .header a:hover {
-            text-decoration: underline;
-        }
-        .tab-content {
-            flex-grow: 1;
-            padding: 10px 0;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid #FF8C00;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-        }
-        .input-group {
-            margin: 5px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            justify-content: center;
-        }
-        .form-control {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #FF8C00;
-            color: white;
-            border-radius: 15px;
-            padding: 8px;
-            font-size: 0.9em;
-            width: 100px;
-        }
-        .btn-custom {
-            background: #FF8C00;
-            color: white;
-            border: none;
-            border-radius: 15px;
-            padding: 8px 15px;
-            font-size: 0.9em;
-        }
-        .btn-custom:hover {
-            background: #FFA500;
-        }
-        .prediction-circle {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 10px 0;
-            position: sticky;
-            bottom: 80px;
-        }
-        .circle {
-            width: 80px;
-            height: 80px;
-            border: 2px solid yellow;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            color: #8B0000;
-        }
-        .bottom-nav {
-            background: #4B0082;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 5px 0;
-            border-top: 1px solid #5A1D99;
-        }
-        .bottom-nav button, .bottom-nav a {
-            color: white;
-            text-decoration: none;
-            text-align: center;
-            font-size: 0.8em;
-            background: none;
-            border: none;
-            padding: 0;
-            width: 20%;
-        }
-        .bottom-nav img {
-            width: 20px;
-            height: 20px;
-            margin-bottom: 3px;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            {% if username %}
-                <span>Chào, {{ username }} | <a href="{{ url_for('logout') }}">Đăng xuất</a></span>
-            {% else %}
-                <a href="{{ url_for('login') }}">Đăng nhập</a> | <a href="{{ url_for('register') }}">Đăng ký</a>
-            {% endif %}
-        </header>
-        <div class="tab-content">
-            <!-- Tab Phân Tích -->
-            <div id="analyze-tab" class="{% if tab != 'analyze' %}hidden{% endif %}">
-                {% if result and not result.error %}
-                    <div class="card">
-                        <p>Số lần khớp: <span class="highlight">{{ result.total_matches }}</span></p>
-                        <p>C (Chẵn): <span class="highlight">{{ result.c_percentage }}%</span></p>
-                        <p>L (Lẻ): <span class="highlight">{{ result.l_percentage }}%</span></p>
-                        <p>Tỷ lệ số: 0: {{ result.number_stats['0'] }}% | 1: {{ result.number_stats['1'] }}% | 2: {{ result.number_stats['2'] }}% | 3: {{ result.number_stats['3'] }}% | 4: {{ result.number_stats['4'] }}%</p>
+        <div class="navbar">
+            <img src="/static/images/Ai_tracker-logo.jpg" alt="Ai_Tracker Logo" onclick="goBack()">
+            <div class="login-btn" id="login-btn-container">
+                <button class="login-btn" onclick="showLoginModal()">Đăng nhập</button>
+            </div>
+        </div>
+        <div id="main-lobby" class="main-lobby">
+            <div class="lobby-item" onclick="showTab('chanle_lobby', 'chanle')">
+                <div class="lobby-item-content">
+                    <i class="fas fa-chevron-right"></i>
+                    <div class="lobby-item-text">
+                        <h3>Xóc dĩa</h3>
+                        <p>Dự đoán Chẵn/Lẻ</p>
                     </div>
-                {% endif %}
-                <div class="prediction-circle">
-                    <div class="circle">{{ result.prediction if result and not result.error else "C/L" }}</div>
                 </div>
-                <div class="input-group">
-                    <form method="POST">
-                        <input type="text" name="kq_input" value="{{ current_kq if current_kq else '' }}" placeholder="Nhập KQ" class="form-control">
-                        <select name="kq_length" class="form-control">
-                            <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4</option>
-                            <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5</option>
-                            <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6</option>
-                            <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7</option>
-                            <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8</option>
-                        </select>
-                        <button type="submit" class="btn-custom">Phân tích</button>
-                    </form>
-                </div>
+                <img src="/static/images/1_Xocdia.png" alt="Xóc dĩa Icon">
             </div>
-
-            <!-- Tab Mô Phỏng -->
-            <div id="simulate-tab" class="{% if tab != 'simulate' %}hidden{% endif %}">
-                {% if sim_result and not sim_result.error %}
-                    <div class="card">
-                        <p>KQ ban đầu: <span class="highlight">{{ sim_result.initial_kq }}</span></p>
-                        <p>Tổng ván: <span class="highlight">{{ sim_result.win_count + sim_result.lose_count }}</span></p>
-                        <p>Win: <span class="highlight">{{ sim_result.win_count }}</span> | Lose: <span class="highlight">{{ sim_result.lose_count }}</span></p>
-                        <p>Vốn: <span class="highlight">{{ sim_result.initial_capital }}</span> → <span class="highlight">{{ sim_result.final_capital }}</span></p>
-                        <p>Lãi/Lỗ: <span class="highlight">{{ sim_result.profit_loss }}</span></p>
+            <div class="lobby-item" onclick="showTab('soso_lobby', 'soso')">
+                <div class="lobby-item-content">
+                    <i class="fas fa-chevron-right"></i>
+                    <div class="lobby-item-text">
+                        <h3>Xổ số</h3>
+                        <p>Dự đoán số đề</p>
                     </div>
-                {% endif %}
-                <div class="input-group">
-                    <form method="POST">
-                        <input type="text" name="sim_kq_input" placeholder="Nhập KQ" class="form-control">
-                        <select name="sim_kq_length" class="form-control">
-                            <option value="4" {% if selected_kq_length == 4 %}selected{% endif %}>4</option>
-                            <option value="5" {% if selected_kq_length == 5 %}selected{% endif %}>5</option>
-                            <option value="6" {% if selected_kq_length == 6 %}selected{% endif %}>6</option>
-                            <option value="7" {% if selected_kq_length == 7 %}selected{% endif %}>7</option>
-                            <option value="8" {% if selected_kq_length == 8 %}selected{% endif %}>8</option>
+                </div>
+                <img src="/static/images/2_Xoso.png" alt="Xổ số Icon">
+            </div>
+        </div>
+        <div id="chanle_lobby" class="tab-content">
+            <header class="header" id="chanle-header">
+                <button class="back-btn" onclick="goBack()"><i class="fas fa-chevron-left"></i></button>
+                <h1>Xóc dĩa</h1>
+            </header>
+            <div id="chanle-sub-tab" class="sub-tab-content">
+                <div class="main-lobby">
+                    <div class="lobby-item" onclick="showAnalysisTab('chanle-details')">
+                        <div class="lobby-item-content">
+                            <i class="fas fa-chevron-right"></i>
+                            <div class="lobby-item-text">
+                                <h3>Dự đoán chẵn/lẻ</h3>
+                                <p>Dự đoán kết quả chính xác cao</p>
+                            </div>
+                        </div>
+                        <img src="/static/images/1-1_analyzer.png" alt="Dự đoán Icon">
+                    </div>
+                    <div class="lobby-item" onclick="showAiPredictionTab('chanle-ai-details')">
+                        <div class="lobby-item-content">
+                            <i class="fas fa-chevron-right"></i>
+                            <div class="lobby-item-text">
+                                <h3>Ai dự đoán</h3>
+                                <p><strong>Dự đoán thông minh hơn</strong></p>
+                            </div>
+                        </div>
+                        <img src="/static/images/1-3_Ai-analyzer.png" alt="AI Dự đoán Icon">
+                    </div>
+                    <div class="lobby-item" onclick="showSimulateTab('chanle-simulate')">
+                        <div class="lobby-item-content">
+                            <i class="fas fa-chevron-right"></i>
+                            <div class="lobby-item-text">
+                                <h3>Mô phỏng ván chơi</h3>
+                                <p>Mô phỏng lại KQ thực tế</p>
+                            </div>
+                        </div>
+                        <img src="/static/images/1-2_simulate.png" alt="Mô phỏng Icon">
+                    </div>
+                </div>
+            </div>
+            <div id="chanle-details" class="sub-tab-details">
+                <div class="prediction-box" id="chanle-prediction-box">
+                    <div class="prediction-rectangle" id="chanle-prediction-rectangle">
+                        <span class="prediction-text" id="chanle-prediction-text"></span>
+                        <span class="prediction-rate" id="chanle-prediction-rate"></span>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div class="result-section">
+                        <p>Số lần khớp: <span class="highlight" id="chanle-match-count">0</span></p>
+                        <p>C (Chẵn): <span class="highlight" id="chanle-sample-chan-rate">0%</span></p>
+                        <p>L (Lẻ): <span class="highlight" id="chanle-sample-le-rate">0%</span></p>
+                    </div>
+                    <div class="stats-section">
+                        <p>Tổng Win: <span class="highlight" id="chanle-total-win">0</span> | Max Win: <span class="highlight" id="chanle-max-win-streak">0</span></p>
+                        <p>Tổng Lose: <span class="highlight" id="chanle-total-lose">0</span> | Max Lose: <span class="highlight" id="chanle-max-lose-streak">0</span></p>
+                        <hr>
+                        <p>Win hiện tại: <span class="highlight" id="chanle-current-win-streak">0</span></p>
+                        <p>Lose hiện tại: <span class="highlight" id="chanle-current-lose-streak">0</span></p>
+                    </div>
+                </div>
+                <div class="current-kq-container">
+                    <div class="current-kq" id="chanle-current-kq">Chưa có chuỗi KQ</div>
+                </div>
+                <div class="input-card">
+                    <div class="input-group">
+                        <input type="text" id="chanle-kq-input" placeholder="Nhập KQ (VD: clcl, 2131)" class="form-control" oninput="formatInput(this)">
+                        <select id="chanle-kq-length" class="form-control">
+                            <option value="6">6 KQ</option>
+                            <option value="7">7 KQ</option>
+                            <option value="8">8 KQ</option>
                         </select>
-                        <button type="submit" class="btn-custom">Mô phỏng</button>
-                    </form>
+                        <button class="btn-custom" id="chanle-analyze-btn" onclick="checkLoginAndAnalyze()">Cập Nhật</button>
+                        <div class="result-buttons" id="chanle-result-buttons">
+                            <button onclick="appendResult('C')">C</button>
+                            <button onclick="appendResult('L')">L</button>
+                            <span>|</span>
+                            <button onclick="appendResult('0')">0</button>
+                            <button onclick="appendResult('1')">1</button>
+                            <button onclick="appendResult('2')">2</button>
+                            <button onclick="appendResult('3')">3</button>
+                            <button onclick="appendResult('4')">4</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-bottom">
+                    <a href="#" onclick="showTab('chanle_lobby', 'chanle')"><i class="fas fa-tools"></i> Công cụ</a>
+                    <a href="#" onclick="goBack()"><i class="fas fa-home"></i> Home</a>
+                    <a href="#" onclick="resetData('chanle')"><i class="fas fa-undo"></i> Reset</a>
                 </div>
             </div>
+            <div id="chanle-ai-details" class="sub-tab-details">
+                <div class="prediction-box" id="chanle-ai-prediction-box">
+                    <div class="prediction-circle" id="chanle-ai-prediction-circle">
+                        <span class="prediction-text" id="chanle-ai-prediction-text"></span>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <div class="result-section">
+                        <p><strong>AI Dự đoán:</strong></p>
+                        <p id="chanle-ai-explanation">Phân tích chuỗi KQ trước đó, dự đoán dựa trên mô hình học máy với độ chính xác cao.</p>
+                    </div>
+                    <div class="stats-section">
+                        <p>Tổng Win: <span class="highlight" id="chanle-ai-total-win">0</span> | Max Win: <span class="highlight" id="chanle-ai-max-win-streak">0</span></p>
+                        <p>Tổng Lose: <span class="highlight" id="chanle-ai-total-lose">0</span> | Max Lose: <span class="highlight" id="chanle-ai-max-lose-streak">0</span></p>
+                        <hr>
+                        <p>Win hiện tại: <span class="highlight" id="chanle-ai-current-win-streak">0</span></p>
+                        <p>Lose hiện tại: <span class="highlight" id="chanle-ai-current-lose-streak">0</span></p>
+                    </div>
+                </div>
+                <div class="current-kq-container">
+                    <div class="current-kq" id="chanle-ai-current-kq">Chưa có chuỗi KQ</div>
+                </div>
+                <div class="input-card">
+                    <div class="input-group">
+                        <input type="text" id="chanle-ai-kq-input" placeholder="Nhập KQ (VD: clcl, 2131)" class="form-control" oninput="formatInput(this)">
+                        <select id="chanle-ai-kq-length" class="form-control">
+                            <option value="6">6 KQ</option>
+                            <option value="7">7 KQ</option>
+                            <option value="8">8 KQ</option>
+                        </select>
+                        <button class="btn-custom" id="chanle-ai-analyze-btn" onclick="checkLoginAndAiAnalyze()">Cập Nhật</button>
+                        <div class="result-buttons" id="chanle-ai-result-buttons">
+                            <button onclick="appendAiResult('C')">C</button>
+                            <button onclick="appendAiResult('L')">L</button>
+                            <span>|</span>
+                            <button onclick="appendAiResult('0')">0</button>
+                            <button onclick="appendAiResult('1')">1</button>
+                            <button onclick="appendAiResult('2')">2</button>
+                            <button onclick="appendAiResult('3')">3</button>
+                            <button onclick="appendAiResult('4')">4</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-bottom">
+                    <a href="#" onclick="showTab('chanle_lobby', 'chanle')"><i class="fas fa-tools"></i> Công cụ</a>
+                    <a href="#" onclick="goBack()"><i class="fas fa-home"></i> Home</a>
+                    <a href="#" onclick="resetAiData('chanle-ai')"><i class="fas fa-undo"></i> Reset</a>
+                </div>
+            </div>
+            <div id="chanle-simulate" class="sub-tab-details">
+                <div class="result-card simulate-result-card" id="simulate-card" style="display: none;">
 
-            <!-- Tab Cài đặt (Chỉ Admin) -->
-            {% if role == 'admin' %}
-            <div id="settings-tab" class="{% if tab != 'settings' %}hidden{% endif %}">
-                <div class="card">
-                    <form method="POST" action="{{ url_for('save_settings') }}">
-                        <div class="input-group">
-                            <select name="background" class="form-control">
-                                <option value="gradient" {% if settings['background'] == 'gradient' %}selected{% endif %}>Gradient</option>
-                                <option value="solid" {% if settings['background'] == 'solid' %}selected{% endif %}>Solid</option>
-                            </select>
+                    <div class="result-section">
+                        <div class="prediction-box" style="margin-bottom: 10px;">
+                            <div class="prediction-rectangle" id="sim-prediction-rectangle" style="width: auto; overflow-x: auto; white-space: nowrap;">
+                                <span class="prediction-text" id="sim-initial-kq" style="display: inline-block;"></span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <select name="font_size" class="form-control">
-                                <option value="small" {% if settings['font_size'] == 'small' %}selected{% endif %}>Nhỏ</option>
-                                <option value="medium" {% if settings['font_size'] == 'medium' %}selected{% endif %}>Trung bình</option>
-                                <option value="large" {% if settings['font_size'] == 'large' %}selected{% endif %}>Lớn</option>
-                            </select>
+                        <hr style="border-top: 2px solid #FFA500; margin: 10px 0;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <p>Tổng ván: <span class="highlight" id="sim-total-rounds">0</span></p>
+                                <p>Win: <span class="highlight" id="sim-win-count">0</span> | Lose: <span class="highlight" id="sim-lose-count">0</span></p>
+                                <p>Vốn: <span class="highlight" id="sim-initial-capital">0</span> → <span class="highlight" id="sim-final-capital">0</span></p>
+                                <p>Lãi/Lỗ: <span class="highlight" id="sim-profit-loss">0</span></p>
+                            </div>
+                            <div>
+                                <p>Max Profit: <span class="highlight" id="sim-max-profit">0</span></p>
+                                <p>Max Loss: <span class="highlight" id="sim-max-loss">0</span></p>
+                                <p>Chuỗi Win Max: <span class="highlight" id="sim-max-win-streak">0</span></p>
+                                <p>Chuỗi Lose Max: <span class="highlight" id="sim-max-lose-streak">0</span></p>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <select name="circle_position" class="form-control">
-                                <option value="top" {% if settings['circle_position'] == 'top' %}selected{% endif %}>Top</option>
-                                <option value="middle" {% if settings['circle_position'] == 'middle' %}selected{% endif %}>Middle</option>
-                                <option value="bottom" {% if settings['circle_position'] == 'bottom' %}selected{% endif %}>Bottom</option>
-                            </select>
+                        <hr style="border-top: 2px solid #FFA500; margin: 10px 0;">
+                        <div style="margin-top: 5px;">
+                            <label style="font-size: 12px;">
+                                <input type="checkbox" id="showSimDetails" onchange="toggleSimDetails()"> Hiển thị chi tiết từng ván
+                            </label>
+                            <div id="sim-details" style="display: none; margin-top: 5px; padding: 5px; background: #2F2F2F; border-radius: 5px; font-size: 10px; max-height: 200px; overflow-y: auto;">
+                            </div>
                         </div>
-                        <button type="submit" class="btn-custom">Lưu</button>
-                    </form>
+                    </div>
+                </div>
+                <div class="input-card">
+                    <div class="input-group">
+                        <input type="text" id="sim-kq-input" placeholder="Nhập KQ (VD: clcl, 2131)" class="form-control" oninput="formatInput(this)">
+                        <select id="sim-kq-length" class="form-control">
+                            <option value="6">6 KQ</option>
+                            <option value="7">7 KQ</option>
+                            <option value="8">8 KQ</option>
+                        </select>
+                        <select id="sim-prediction-tool" class="form-control">
+                            <option value="analyze">Dự Đoán Chẵn Lẻ</option>
+                            <option value="ai_analyze">AI Dự Đoán</option>
+                        </select>
+                        <label style="font-size: 12px; color: #FFFFFF;">
+                            <input type="checkbox" id="use-betting" onchange="showBettingModal()"> Đặt cược
+                        </label>
+                        <button class="btn-custom" onclick="checkLoginAndSimulate()">Mô phỏng</button>
+                    </div>
+                </div>
+                <div class="nav-bottom">
+                    <a href="#" onclick="showTab('chanle_lobby', 'chanle')"><i class="fas fa-tools"></i> Công cụ</a>
+                    <a href="#" onclick="goBack()"><i class="fas fa-home"></i> Home</a>
+                    <a href="#" onclick="resetSimulateData()"><i class="fas fa-undo"></i> Reset</a>
                 </div>
             </div>
-            {% endif %}
+        </div>
+        <div id="soso_lobby" class="tab-content">
+            <header class="header" id="soso-header">
+                <button class="back-btn" onclick="goBack()"><i class="fas fa-chevron-left"></i></button>
+                <h1>Xổ số</h1>
+            </header>
+            <div id="soso-details" class="sub-tab-details">
+                <div class="result-card">
+                    <div class="result-section">
+                        <p class="current-kq" id="soso-current-soso">Chưa có chuỗi số</p>
+                        <p>Tỷ lệ số 0-9:</p>
+                        <p>0: <span class="highlight" id="soso-rate-0">0%</span> | 1: <span class="highlight" id="soso-rate-1">0%</span> | 2: <span class="highlight" id="soso-rate-2">0%</span> | 3: <span class="highlight" id="soso-rate-3">0%</span> | 4: <span class="highlight" id="soso-rate-4">0%</span></p>
+                        <p>5: <span class="highlight" id="soso-rate-5">0%</span> | 6: <span class="highlight" id="soso-rate-6">0%</span> | 7: <span class="highlight" id="soso-rate-7">0%</span> | 8: <span class="highlight" id="soso-rate-8">0%</span> | 9: <span class="highlight" id="soso-rate-9">0%</span></p>
+                    </div>
+                    <div class="prediction-section">
+                        <div class="prediction-circle" id="soso-prediction-circle" data-percentage="0%">Số: <span id="soso-prediction">?</span></div>
+                    </div>
+                </div>
+                <div class="input-card">
+                    <div class="input-group">
+                        <input type="text" id="soso_input" placeholder="Nhập số (VD: 12345)" class="form-control">
+                        <select id="soso_length" class="form-control">
+                            <option value="6">6 số</option>
+                            <option value="7">7 số</option>
+                            <option value="8">8 số</option>
+                        </select>
+                        <button class="btn-custom" id="soso-analyze-btn" onclick="checkLoginAndAnalyzeSoso()">Phân Tích</button>
+                    </div>
+                </div>
+                <div class="nav-bottom">
+                    <a href="#" onclick="goBack()"><i class="fas fa-home"></i> Home</a>
+                    <a href="#" onclick="resetData('soso')"><i class="fas fa-undo"></i> Reset</a>
+                </div>
+            </div>
+        </div>
+        <div class="overlay" id="overlay" onclick="hideAllModals()"></div>
+        <div id="login-modal" class="login-modal">
+            <button class="close-btn" onclick="hideModal('login-modal')">×</button>
+            <div id="modal-tab-login" class="modal-tab active">
+                <h3>Đăng nhập</h3>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
+                    </div>
+                    <button type="submit" class="btn-custom">Đăng nhập</button>
+                    <div class="form-links">
+                        <a href="#" onclick="showRegisterTab()">Đăng ký</a>
+                        <a href="#" onclick="showForgotPasswordTab()">Quên mật khẩu?</a>
+                    </div>
+                </form>
+            </div>
+            <div id="modal-tab-register" class="modal-tab" style="display: none;">
+                <h3>Đăng ký</h3>
+                <form id="register-form" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
+                    </div>
+                    <button type="submit" class="btn-custom">Đăng ký</button>
+                    <div class="form-links">
+                        <a href="#" onclick="showLoginTab()">Quay lại đăng nhập</a>
+                    </div>
+                </form>
+            </div>
+            <div id="modal-tab-forgot" class="modal-tab" style="display: none;">
+                <h3>Quên mật khẩu</h3>
+                <form id="forgot-password-form" onsubmit="handleForgotPassword(event)">
+                    <div class="form-group">
+                        <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required>
+                    </div>
+                    <button type="submit" class="btn-custom">Gửi yêu cầu</button>
+                    <div class="form-links">
+                        <a href="#" onclick="showLoginTab()">Quay lại đăng nhập</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="betting-modal" class="betting-modal">
+            <button class="close-btn" onclick="hideModal('betting-modal')">×</button>
+            <h3>Thiết lập cược</h3>
+            <form id="betting-form" onsubmit="saveBettingSettings(event)">
+                <div class="form-capital">
+                    <div class="form-row">
+                        <div class="form-column">
+                            <label class="form-label" for="sim-initial-capital-input">Cài đặt vốn</label>
+                            <div class="form-group">
+                                <input type="number" id="sim-initial-capital-input" name="initialCapital" autocomplete="off" placeholder="Vốn ban đầu" class="form-control" value="0">
+                            </div>
+                            <div class="form-group">
+                                <input type="number" id="sim-min-bet" name="minBet" autocomplete="off" placeholder="Vốn tối thiểu" class="form-control" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="orange-line">
+                </div>
+                <div class="form-row">
+                    <div class="form-column">
+                        <label class="form-label" for="sim-win-1">Cài đặt Win</label>
+                        <div class="form-group">
+                            <input type="number" id="sim-win-1" name="win1" autocomplete="off" placeholder="Win 1" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="sim-win-2" name="win2" autocomplete="off" placeholder="Win 2" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="sim-win-3" name="win3" autocomplete="off" placeholder="Win 3" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="sim-win-4" name="win4" autocomplete="off" placeholder="Win 4" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="sim-win-5" name="win5" autocomplete="off" placeholder="Win 5" class="form-control" value="0">
+                        </div>
+                    </div>
+                    <div class="form-column">
+                        <label class="form-label" for="sim-lose-1">Cài đặt Lose</label>
+                        <div class="form-group">
+                            <input type="number" id="sim-lose-1" name="lose1" autocomplete="off" placeholder="Lose 1" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="sim-lose-2" name="lose2" autocomplete="off" placeholder="Lose 2" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="sim-lose-3" name="lose3" autocomplete="off" placeholder="Lose 3" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="sim-lose-4" name="lose4" autocomplete="off" placeholder="Lose 4" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="sim-lose-5" name="lose5" autocomplete="off" placeholder="Lose 5" class="form-control" value="0">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-custom">Lưu</button>
+            </form>
         </div>
     </div>
-    <footer class="bottom-nav">
-        <form method="POST">
-            <button type="submit" name="tab" value="analyze">
-                <img src="{{ url_for('static', filename='images/placeholder1.png') }}" alt="Phân tích">
-                Phân tích
-            </button>
-        </form>
-        <form method="POST">
-            <button type="submit" name="tab" value="simulate">
-                <img src="{{ url_for('static', filename='images/placeholder2.png') }}" alt="Mô phỏng">
-                Mô phỏng
-            </button>
-        </form>
-        {% if role == 'admin' %}
-        <form method="POST">
-            <button type="submit" name="tab" value="settings">
-                <img src="{{ url_for('static', filename='images/placeholder3.png') }}" alt="Cài đặt">
-                Cài đặt
-            </button>
-        </form>
-        <a href="{{ url_for('manage_users') }}">
-            <img src="{{ url_for('static', filename='images/placeholder4.png') }}" alt="Quản lý">
-            Quản lý
-        </a>
-        {% else %}
-        <button disabled>
-            <img src="{{ url_for('static', filename='images/home.png') }}" alt="Home">
-            Home
-        </button>
-        <button disabled>
-            <img src="{{ url_for('static', filename='images/placeholder3.png') }}" alt="3">
-            3
-        </button>
-        <button disabled>
-            <img src="{{ url_for('static', filename='images/placeholder4.png') }}" alt="4">
-            4
-        </button>
-        {% endif %}
-    </footer>
-    <script>
-        window.onload = function() {
-            const settings = {{ settings | tojson }};
-            if (settings) {
-                const background = settings.background || 'gradient';
-                const fontSize = settings.font_size || 'medium';
-                const circlePosition = settings.circle_position || 'middle';
-                if (background === 'solid') document.body.style.background = '#1E1A3C';
-                const fontSizes = { small: '0.8em', medium: '0.9em', large: '1.1em' };
-                document.querySelectorAll('p, label, select, button, input').forEach(el => {
-                    el.style.fontSize = fontSizes[fontSize] || '0.9em';
-                });
-                const circle = document.querySelector('.prediction-circle');
-                if (circlePosition === 'top') circle.style.bottom = '200px';
-                else if (circlePosition === 'middle') circle.style.bottom = '80px';
-                else circle.style.bottom = '0';
-            }
-        };
-    </script>
+    <script src="/static/js/scripts.js"></script>
+    <!-- Xóa các script không cần thiết liên quan đến iframe -->
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92258d708ae76744',t:'MTc0MjMwOTUzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

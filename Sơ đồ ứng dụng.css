@@ -1,0 +1,100 @@
+App
+├── Sảnh chính (Main Lobby)
+│   ├── Logo (static/images/Ai_tracker-logo.jpg) - Góc trái trên cùng
+│   ├── Nút Đăng nhập - Góc phải trên cùng
+│   ├── Card 1: Dự đoán Chẵn/Lẻ (Chỉ ở sảnh chính bên trong sẽ không còn xuất hiện nữa)
+│   │   ├── Card 1.1: DỰ ĐOÁN KQ (Hiển thị giống như ngoài sảnh chính là một tab nội bộ riêng khi click vào)
+│   │   │   ├── Input KQ
+│   │   │   ├── Select độ dài (4-8)
+│   │   │   ├── Nút "PHÂN TÍCH" (sau phân tích có dãy KQ mẫu: C L | 0 1 2 3 4 để cập nhật)
+│   │   │   ├── Kết quả: Số lần khớp, C/L %, Tỷ lệ số, Dự đoán % (Circle)
+│   │   │   ├── Nav-bottom: Home | Dự đoán | Mô phỏng | Reset 
+│   │   ├── Card 1.2: MÔ PHỎNG VÁN CHƠI (Hiển thị giống như ngoài sảnh chính là một tab nội bộ riêng khi click vào)
+│   │   │   ├── Input KQ
+│   │   │   ├── Select độ dài (4-8)
+│   │   │   ├── Nút MÔ PHỎNG
+│   │   │   ├── Tickbox: Vốn ban đầu, Mức cược tối thiểu, Các mức cược khi thắng/thua 1-5 lần
+│   │   │   ├── Kết quả: KQ ban đầu, Tổng ván, Win/Lose, Vốn, Lãi/Lỗ, Tickbox chi tiết từng ván
+│   │   │   ├── Nav-bottom: Home | Dự đoán | Mô phỏng | Reset 
+│   │   ├── Nav-bottom: Home
+│   ├── Card 2: Dự đoán Sổ số (Chỉ ở sảnh chính bên trong sẽ không còn xuất hiện nữa)
+│   │   ├── Card 2.1: DỰ ĐOÁN KQ
+│   │   ├── Input lịch sử KQ
+│   │   ├── Select độ dài (2-4)
+│   │   ├── Nút Phân tích Sổ số
+│   │   ├── Kết quả: Tổng số lần xuất hiện, Tỷ lệ số, Dự đoán số nóng
+│   │   ├── Nav-bottom: Home
+│   ├── Nút Quay lại (Nav-bottom)
+├── Modal Đăng nhập (Khi hiện lên thì tất cả các nội dung bên dưới sẽ bị che mờ)
+│   ├── Input Tên đăng nhập
+│   ├── Input Mật khẩu
+│   ├── Nút Đăng nhập
+│   ├── Nút Đóng (×)
+
+1/ thanh điều hướng Chuyển lên trên cùng (Nav-top)
+2/ Trong Card 1.1: DỰ ĐOÁN KQ và card 1.2: MÔ PHỎNG VÁN CHƠI sẽ không còn hiện lên 2 card này nữa mà sẽ chuyển thành thanh điều hướng ở dưới cùng (Nav-bottom)
+3/ Dữ liệu tra dự đoán và mô phỏng trong card Chẵn/Lẻ vẫn như logic ban đầu là láy dữ liệu từ file (Ai_Tracker/sample_data.py) để tiến hành phân tích và mô phỏng
+4/ Trong card 1.2: MÔ PHỎNG VÁN CHƠI cũng là một tab nội bộ riêng khi click vào có các chức năng như đã thống nhất từ đầu (Nếu bạn bị mất thông tin thì hỏi lại tôi)
+
+Quy trình mới:
+
+ 1. Khởi đầu trò chơi:
+ • Người dùng sẽ cung cấp 5 kết quả (KQ) gần đây nhất.
+ 2. Kiểm tra dữ liệu:
+ • AI sẽ so sánh 5 KQ mới nhất với 30 mẫu KQ đã có sẵn trước đó.
+ • AI sẽ đếm số lần chuỗi 5 KQ mới trùng khớp với các mẫu trong danh sách.
+ 3. Thống kê dữ liệu:
+ • Sau khi kiểm tra, AI sẽ tính toán tỷ lệ xuất hiện của C (Chẵn) và L (Lẻ) ở vị trí ngay sau mỗi chuỗi trùng tìm được.
+ 4. Không đưa ra dự đoán:
+ • AI chỉ thực hiện việc tra cứu và thống kê, không suy đoán hay dự báo kết quả tiếp theo.
+ 5. Cập nhật danh sách KQ:
+ • Mỗi khi người dùng cung cấp một KQ thực tế mới, AI sẽ thêm vào chuỗi dữ liệu và tiến hành tra cứu lại từ đầu.
+
+Mục tiêu:
+
+ • Phát hiện các mô hình lặp lại trong chuỗi KQ.
+ • Đánh giá tỷ lệ thắng của các mô hình đã xuất hiện.
+ • Cung cấp thông tin để người dùng tự quyết định cách đặt cược chính xác hơn.
+
+Nguyên tắc thực hiện:
+
+ • Không dự đoán kết quả, chỉ tập trung vào phân tích mô hình và báo cáo số liệu.
+ • Gửi báo cáo thống kê mỗi khi chuỗi KQ được cập nhật với dữ liệu mới.
+
+ Chuỗi KQ hiện tại:
+
+[Bao gồm 5 KQ đầu tiên kèm với các KQ tiếp theo người dùng cung cấp]
+
+Tra cứu kết quả:
+ • Tổng số lần trùng: [Số lần trùng khớp với chuỗi KQ trong 30 mẫu đã cung cấp]
+ • KQ sau chuỗi trùng:
+ • C (Chẵn): [Tỷ lệ %]
+ • L (Lẻ): [Tỷ lệ %]
+
+ Cảm ơn bạn đã làm rõ mục đích. Dưới đây là quy trình và cách làm tôi sẽ thực hiện dựa trên yêu cầu của bạn:
+
+Mục đích:
+ 1. Tra cứu các chuỗi KQ mới nhất bạn cung cấp với 30 mẫu KQ đã có.
+ 2. Thống kê các chuỗi trùng và tính tỷ lệ Chẵn (C) và Lẻ (L) sau các chuỗi trùng.
+ 3. Sau mỗi lần bạn cung cấp KQ thực tế, cập nhật chuỗi và tra cứu tiếp các KQ mới nhất.
+
+Các bước tôi sẽ làm:
+ 1. Nhập dữ liệu:
+ • Nhập chuỗi KQ mới mà bạn cung cấp.
+ • Ghép chuỗi mới vào chuỗi KQ thực tế (bao gồm cả các kết quả trước đó bạn cung cấp).
+ 2. Tra cứu dữ liệu:
+ • So sánh chuỗi KQ mới với 30 mẫu KQ đã có để tìm các đoạn trùng khớp.
+ • Thống kê số lần trùng và tính tỷ lệ C và L sau mỗi chuỗi trùng.
+ 3. Cập nhật kết quả:
+ • Cung cấp báo cáo về tỷ lệ C và L sau các chuỗi trùng.
+ • Cập nhật chuỗi KQ mới sau khi bạn cung cấp KQ thực tế tiếp theo.
+ 4. Tự động tra cứu:
+ • Sau mỗi lần bạn cung cấp KQ, tôi sẽ tiếp tục tra cứu và thống kê mà không cần phải suy luận.
+
+Giải pháp thực tế:
+ • Dữ liệu sẽ được tra cứu và cập nhật liên tục theo mỗi lần bạn cung cấp KQ mới.
+ • Báo cáo sẽ được xuất để bạn có thể dễ dàng theo dõi tỷ lệ và kết quả thống kê.
+
+Nếu bạn đồng ý với quy trình này, tôi sẽ bắt đầu thực hiện mã Python ngay. Bạn chỉ cần cung cấp 5 KQ đầu tiên, tôi sẽ xử lý tra cứu và thống kê cho bạn.
+
+Hãy cho tôi biết nếu bạn muốn tôi bắt đầu viết mã Python cho quy trình này!

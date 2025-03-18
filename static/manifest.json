@@ -1,0 +1,21 @@
+{
+  "name": "Ai_Tracker",
+  "short_name": "Ai_Tracker",
+  "description": "Ứng dụng dự đoán Xóc dĩa và Xổ số",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F0C2F",
+  "theme_color": "#0F0C2F",
+  "icons": [
+    {
+      "src": "/static/images/Ai_tracker-logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/static/images/Ai_tracker-logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

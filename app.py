@@ -1,208 +1,149 @@
-from flask import Flask, request, render_template, redirect, url_for, session, flash
-from datetime import datetime, timedelta
-import sqlite3
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask_session import Session
 import os
-import json
-
-app = Flask(__name__)
-app.secret_key = 'your_secret_key'
-
-# Kết nối database SQLite
-def get_db():
-    conn = sqlite3.connect('users.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-# Đọc file JSON người dùng
-def load_users():
-    if os.path.exists('users.json'):
-        with open('users.json', 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
-
-# Lưu file JSON người dùng
-def save_users(users):
-    with open('users.json', 'w', encoding='utf-8') as f:
-        json.dump(users, f, ensure_ascii=False, indent=4)
-
-# Đọc file JSON admin
-def load_admin():
-    if os.path.exists('admin.json'):
-        with open('admin.json', 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {"username": "admin", "password": "admin123", "role": "admin"}
-
-# Lưu file JSON admin
-def save_admin(admin):
-    with open('admin.json', 'w', encoding='utf-8') as f:
-        json.dump(admin, f, ensure_ascii=False, indent=4)
-
-# Khởi tạo database và file JSON
-def init_db():
-    if not os.path.exists('users.db'):
-        with get_db() as conn:
-            conn.execute('''
-                CREATE TABLE IF NOT EXISTS settings (
-                    user_id INTEGER,
-                    background TEXT,
-                    font_size TEXT,
-                    circle_position TEXT,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                )
-            ''')
-            # Khởi tạo cài đặt mặc định cho admin (user_id = 0)
-            conn.execute('INSERT OR IGNORE INTO settings (user_id, background, font_size, circle_position) VALUES (?, ?, ?, ?)',
-                         (0, 'gradient', 'medium', 'middle'))
-            conn.commit()
-    if not os.path.exists('users.json'):
-        save_users({})
-    if not os.path.exists('admin.json'):
-        save_admin({"username": "admin", "password": "admin123", "role": "admin"})
-
-init_db()
-
+from datetime import timedelta
 from analyze import analyze_data
-from simulate import simulate_data
+from ai_analyze import ai_analyze_data
+from analyze_soso import analyze_soso_data
+from simulate import simulate_game
+from users import register_user, login_user, load_users
 
-@app.route('/', methods=['GET', 'POST'])
+app = Flask(__name__, static_folder='static')
+app.secret_key = 'your_secret_key'
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+Session(app)
+
+# Kiểm tra đăng nhập chỉ cho các route cần
+def login_required(f):
+    def wrap(*args, **kwargs):
+        if 'username' not in session:
+            return jsonify({'error': 'Vui lòng đăng nhập để sử dụng chức năng này!'})
+        return f(*args, **kwargs)
+    wrap.__name__ = f.__name__
+    return wrap
+
+@app.route('/')
 def index():
-    if 'user_id' not in session or 'username' not in session:
-        return redirect(url_for('login'))
-    
-    tab = request.form.get('tab', 'analyze')
-    users = load_users()
-    admin = load_admin()
-    # Tìm user hiện tại, nếu không tìm thấy thì dùng admin hoặc None
-    current_user = next((u for u in users.values() if u['id'] == session['user_id']), admin if session['username'] == admin['username'] else None)
-    if not current_user:
-        flash('Không tìm thấy thông tin người dùng!')
-        return redirect(url_for('login'))
-    
-    current_kq = session.get('current_kq', '')
-    selected_kq_length = session.get('selected_kq_length', 4)
-    use_custom_settings = session.get('use_custom_settings', False)
-    initial_capital = session.get('initial_capital', 100000)
-    min_bet = session.get('min_bet', 1000)
-    lose_streak_bet_increase = session.get('lose_streak_bet_increase', {})
-    win_streak_bet_increase = session.get('win_streak_bet_increase', {})
+    return render_template('index.html')
 
-    if request.method == 'POST':
-        if 'kq_input' in request.form:
-            kq_input = request.form['kq_input']
-            kq_length = int(request.form['kq_length'])
-            result = analyze_data(kq_input, kq_length)
-            if result:
-                session['current_kq'] = result['current_kq']
-                session['selected_kq_length'] = kq_length
-            return render_template('index.html', tab=tab, result=result, current_kq=session['current_kq'],
-                                  selected_kq_length=session['selected_kq_length'], username=session['username'],
-                                  role=current_user['role'], settings=None)
-        elif 'sim_kq_input' in request.form:
-            sim_kq_input = request.form['sim_kq_input']
-            sim_kq_length = int(request.form['sim_kq_length'])
-            sim_result = simulate_data(sim_kq_input, sim_kq_length, initial_capital, min_bet,
-                                      lose_streak_bet_increase, win_streak_bet_increase, use_custom_settings)
-            if sim_result:
-                session['sim_kq_length'] = sim_kq_length
-            return render_template('index.html', tab=tab, sim_result=sim_result, current_kq=session.get('current_kq'),
-                                  selected_kq_length=session.get('selected_kq_length'), use_custom_settings=use_custom_settings,
-                                  initial_capital=initial_capital, min_bet=min_bet, lose_streak_bet_increase=lose_streak_bet_increase,
-                                  win_streak_bet_increase=win_streak_bet_increase, username=session['username'],
-                                  role=current_user['role'], settings=None)
-
-    with get_db() as conn:
-        settings = conn.execute('SELECT * FROM settings WHERE user_id = ?', (session['user_id'],)).fetchone()
-    return render_template('index.html', tab=tab, current_kq=current_kq, selected_kq_length=selected_kq_length,
-                          use_custom_settings=use_custom_settings, initial_capital=initial_capital, min_bet=min_bet,
-                          lose_streak_bet_increase=lose_streak_bet_increase, win_streak_bet_increase=win_streak_bet_increase,
-                          username=session['username'], role=current_user['role'], settings=dict(settings) if settings else {})
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        users = load_users()
-        admin = load_admin()
-        user = next((u for u in users.values() if u['username'] == username and u['password'] == password), None)
-        if not user and admin['username'] == username and admin['password'] == password:
-            user = admin
-        if user:
-            session['user_id'] = user.get('id', 0)  # ID 0 cho admin
-            session['username'] = user['username']
-            session['role'] = user['role']
-            return redirect(url_for('index'))
-        else:
-            flash('Sai tên đăng nhập hoặc mật khẩu!')
+@app.route('/login_page', methods=['GET'])
+def login_page():
+    if 'username' in session:
+        return redirect(url_for('index'))
     return render_template('login.html')
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        users = load_users()
-        if username in [u['username'] for u in users.values()]:
-            flash('Tên đăng nhập đã tồn tại!')
-        else:
-            new_id = max((u['id'] for u in users.values()), default=0) + 1
-            users[new_id] = {"id": new_id, "username": username, "password": password, "role": "user", "points": 0, "usage_time": 0}
-            save_users(users)
-            return redirect(url_for('login'))
-    return render_template('register.html')
+@app.route('/check_login', methods=['GET'])
+def check_login():
+    if 'username' in session:
+        return jsonify({'logged_in': True, 'username': session['username']})
+    return jsonify({'logged_in': False})
 
-@app.route('/logout')
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form['username']
+    password = request.form['password']
+    
+    success, message = login_user(username, password)
+    if success:
+        session['username'] = username
+        session.permanent = True
+        return jsonify({'success': True, 'username': username})
+    return jsonify({'success': False, 'message': message})
+
+@app.route('/logout', methods=['POST'])
 def logout():
-    session.clear()
-    return redirect(url_for('login'))
+    session.pop('username', None)
+    return jsonify({'success': True})
 
-@app.route('/save_settings', methods=['POST'])
-def save_settings():
-    if 'user_id' not in session or session['role'] != 'admin':
-        return redirect(url_for('index'))
+@app.route('/register', methods=['POST'])
+def register():
+    username = request.form['username']
+    password = request.form['password']
     
-    background = request.form.get('background')
-    font_size = request.form.get('font_size')
-    circle_position = request.form.get('circle_position')
-    
-    with get_db() as conn:
-        conn.execute('INSERT OR REPLACE INTO settings (user_id, background, font_size, circle_position) VALUES (?, ?, ?, ?)', 
-                     (session['user_id'], background, font_size, circle_position))
-        conn.commit()
-    flash('Cài đặt đã được lưu!')
-    return redirect(url_for('index'))
+    success, message = register_user(username, password)
+    return jsonify({'success': success, 'message': message})
 
-@app.route('/manage_users', methods=['GET', 'POST'])
-def manage_users():
-    if 'user_id' not in session or session['role'] != 'admin':
-        return redirect(url_for('index'))
-    
+@app.route('/forgot_password', methods=['POST'])
+def forgot_password():
+    username = request.form['username']
     users = load_users()
-    if request.method == 'POST':
-        user_id = request.form['user_id']
-        points = request.form.get('points')
-        usage_time = request.form.get('usage_time')
-        if str(user_id) in users:
-            if points:
-                users[str(user_id)]['points'] = int(points)
-            if usage_time:
-                users[str(user_id)]['usage_time'] = int(usage_time)
-            save_users(users)
-        flash('Cập nhật thành công!')
-    
-    return render_template('manage_users.html', users=users)
+    if username not in users:
+        return jsonify({'success': False, 'message': 'Tên đăng nhập không tồn tại!'})
+    return jsonify({'success': True, 'message': 'Yêu cầu đã được gửi! Vui lòng kiểm tra email.'})
 
-@app.route('/update_data', methods=['GET', 'POST'])
-def update_data():
-    if 'user_id' not in session or session['role'] != 'admin':
-        return redirect(url_for('index'))
-    
-    if request.method == 'POST':
-        new_data = request.form.get('new_data')
-        with open('data.txt', 'a', encoding='utf-8') as f:
-            f.write(new_data + '\n')
-        flash('Dữ liệu đã được cập nhật!')
-    return render_template('update_data.html')
+@app.route('/analyze', methods=['POST'])
+@login_required
+def analyze():
+    kq_input = request.form.get('kq_input', '')
+    kq_length = int(request.form.get('kq_length', 6))
+    result = analyze_data(kq_input, kq_length)
+    return jsonify(result)
+
+@app.route('/ai_analyze', methods=['POST'])
+@login_required
+def ai_analyze():
+    kq_input = request.form.get('kq_input', '')
+    kq_length = int(request.form.get('kq_length', 6))
+    result = ai_analyze_data(kq_input, kq_length)
+    return jsonify(result)
+
+@app.route('/analyze_soso', methods=['POST'])
+def analyze_soso():
+    soso_input = request.form.get('soso_input', '')
+    soso_length = int(request.form.get('soso_length', 6))
+    result = analyze_soso_data(soso_input, soso_length)
+    return jsonify(result)
+
+@app.route('/simulate', methods=['POST'])
+@login_required
+def simulate():
+    kq_input = request.form.get('kq_input', '').strip()
+    kq_length = int(request.form.get('kq_length', 6))
+    prediction_tool = request.form.get('prediction_tool', 'analyze')
+    initial_capital = float(request.form.get('initial_capital', 0))
+    min_bet = float(request.form.get('min_bet', 0))
+    use_betting = bool(request.form.get('use_betting', False))
+
+    # Nhận dữ liệu JSON và chuyển thành dictionary
+    win_streak_bet_increase_json = request.form.get('win_streak_bet_increase', '{}')
+    lose_streak_bet_increase_json = request.form.get('lose_streak_bet_increase', '{}')
+    import json
+    win_streak_bet_increase = json.loads(win_streak_bet_increase_json)
+    lose_streak_bet_increase = json.loads(lose_streak_bet_increase_json)
+
+    # Kiểm tra và gán giá trị mặc định nếu thiếu
+    win1 = float(win_streak_bet_increase.get('1', 0))
+    win2 = float(win_streak_bet_increase.get('2', 0))
+    win3 = float(win_streak_bet_increase.get('3', 0))
+    win4 = float(win_streak_bet_increase.get('4', 0))
+    win5 = float(win_streak_bet_increase.get('5', 0))
+    lose1 = float(lose_streak_bet_increase.get('1', 0))
+    lose2 = float(lose_streak_bet_increase.get('2', 0))
+    lose3 = float(lose_streak_bet_increase.get('3', 0))
+    lose4 = float(lose_streak_bet_increase.get('4', 0))
+    lose5 = float(lose_streak_bet_increase.get('5', 0))
+
+    # Debug dữ liệu nhận được
+    print(f"Received - kq_input: {kq_input}, use_betting: {use_betting}, initial_capital: {initial_capital}, min_bet: {min_bet}, win1: {win1}, lose1: {lose1}")
+
+    # Không cắt chuỗi KQ, gửi toàn bộ chuỗi thực tế
+    kq_list = kq_input.split() if kq_input else []
+    if len(kq_list) < kq_length + 1:
+        return jsonify({'error': f'Chuỗi KQ phải có ít nhất {kq_length + 1} kết quả để mô phỏng!'})
+    adjusted_kq_input = ' '.join(kq_list)
+
+    result = simulate_game(
+        adjusted_kq_input,
+        kq_length,
+        prediction_tool,
+        initial_capital,
+        min_bet,
+        win1, win2, win3, win4, win5,
+        lose1, lose2, lose3, lose4, lose5,
+        use_betting
+    )
+    return jsonify(result)
 
 if __name__ == '__main__':
     app.run(debug=True)
