@@ -14,7 +14,6 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 Session(app)
 
-# Kiểm tra đăng nhập chỉ cho các route cần
 def login_required(f):
     def wrap(*args, **kwargs):
         if 'username' not in session:
@@ -22,6 +21,15 @@ def login_required(f):
         return f(*args, **kwargs)
     wrap.__name__ = f.__name__
     return wrap
+
+# Thêm header để vô hiệu hóa Cloudflare script nếu không cần thiết
+@app.after_request
+def add_header(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    # Vô hiệu hóa Cloudflare script (nếu không cần thiết)
+    response.headers['CF-Challenge'] = 'disable'
+    return response
 
 @app.route('/')
 def index():
@@ -43,7 +51,6 @@ def check_login():
 def login():
     username = request.form['username']
     password = request.form['password']
-    
     success, message = login_user(username, password)
     if success:
         session['username'] = username
@@ -60,7 +67,6 @@ def logout():
 def register():
     username = request.form['username']
     password = request.form['password']
-    
     success, message = register_user(username, password)
     return jsonify({'success': success, 'message': message})
 
@@ -101,33 +107,17 @@ def simulate():
     kq_input = request.form.get('kq_input', '').strip()
     kq_length = int(request.form.get('kq_length', 6))
     prediction_tool = request.form.get('prediction_tool', 'analyze')
-    initial_capital = float(request.form.get('initial_capital', 0))
-    min_bet = float(request.form.get('min_bet', 0))
-    use_betting = bool(request.form.get('use_betting', False))
+    use_betting = request.form.get('use_betting', 'false').lower() == 'true'
 
-    # Nhận dữ liệu JSON và chuyển thành dictionary
-    win_streak_bet_increase_json = request.form.get('win_streak_bet_increase', '{}')
-    lose_streak_bet_increase_json = request.form.get('lose_streak_bet_increase', '{}')
+    # Nhận betting_settings từ frontend
     import json
-    win_streak_bet_increase = json.loads(win_streak_bet_increase_json)
-    lose_streak_bet_increase = json.loads(lose_streak_bet_increase_json)
+    betting_settings = json.loads(request.form.get('betting_settings', '{}'))
+    initial_capital = float(betting_settings.get('initialCapital', 0))
+    win_bets = [float(betting_settings.get(f'win{i}', 0)) for i in range(1, 7)]
+    lose_bets = [float(betting_settings.get(f'lose{i}', 0)) for i in range(1, 7)]
 
-    # Kiểm tra và gán giá trị mặc định nếu thiếu
-    win1 = float(win_streak_bet_increase.get('1', 0))
-    win2 = float(win_streak_bet_increase.get('2', 0))
-    win3 = float(win_streak_bet_increase.get('3', 0))
-    win4 = float(win_streak_bet_increase.get('4', 0))
-    win5 = float(win_streak_bet_increase.get('5', 0))
-    lose1 = float(lose_streak_bet_increase.get('1', 0))
-    lose2 = float(lose_streak_bet_increase.get('2', 0))
-    lose3 = float(lose_streak_bet_increase.get('3', 0))
-    lose4 = float(lose_streak_bet_increase.get('4', 0))
-    lose5 = float(lose_streak_bet_increase.get('5', 0))
+    print(f"Received - kq_input: {kq_input}, use_betting: {use_betting}, initial_capital: {initial_capital}, win_bets: {win_bets}, lose_bets: {lose_bets}")
 
-    # Debug dữ liệu nhận được
-    print(f"Received - kq_input: {kq_input}, use_betting: {use_betting}, initial_capital: {initial_capital}, min_bet: {min_bet}, win1: {win1}, lose1: {lose1}")
-
-    # Không cắt chuỗi KQ, gửi toàn bộ chuỗi thực tế
     kq_list = kq_input.split() if kq_input else []
     if len(kq_list) < kq_length + 1:
         return jsonify({'error': f'Chuỗi KQ phải có ít nhất {kq_length + 1} kết quả để mô phỏng!'})
@@ -138,9 +128,8 @@ def simulate():
         kq_length,
         prediction_tool,
         initial_capital,
-        min_bet,
-        win1, win2, win3, win4, win5,
-        lose1, lose2, lose3, lose4, lose5,
+        win_bets,
+        lose_bets,
         use_betting
     )
     return jsonify(result)

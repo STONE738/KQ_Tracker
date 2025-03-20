@@ -185,55 +185,45 @@
                 </div>
             </div>
             <div id="chanle-simulate" class="sub-tab-details">
-                <div class="result-card simulate-result-card" id="simulate-card" style="display: none;">
-
-                    <div class="result-section">
-                        <div class="prediction-box" style="margin-bottom: 10px;">
-                            <div class="prediction-rectangle" id="sim-prediction-rectangle" style="width: auto; overflow-x: auto; white-space: nowrap;">
-                                <span class="prediction-text" id="sim-initial-kq" style="display: inline-block;"></span>
-                            </div>
-                        </div>
-                        <hr style="border-top: 2px solid #FFA500; margin: 10px 0;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <div>
-                                <p>Tổng ván: <span class="highlight" id="sim-total-rounds">0</span></p>
-                                <p>Win: <span class="highlight" id="sim-win-count">0</span> | Lose: <span class="highlight" id="sim-lose-count">0</span></p>
-                                <p>Vốn: <span class="highlight" id="sim-initial-capital">0</span> → <span class="highlight" id="sim-final-capital">0</span></p>
-                                <p>Lãi/Lỗ: <span class="highlight" id="sim-profit-loss">0</span></p>
-                            </div>
-                            <div>
-                                <p>Max Profit: <span class="highlight" id="sim-max-profit">0</span></p>
-                                <p>Max Loss: <span class="highlight" id="sim-max-loss">0</span></p>
-                                <p>Chuỗi Win Max: <span class="highlight" id="sim-max-win-streak">0</span></p>
-                                <p>Chuỗi Lose Max: <span class="highlight" id="sim-max-lose-streak">0</span></p>
-                            </div>
-                        </div>
-                        <hr style="border-top: 2px solid #FFA500; margin: 10px 0;">
-                        <div style="margin-top: 5px;">
-                            <label style="font-size: 12px;">
-                                <input type="checkbox" id="showSimDetails" onchange="toggleSimDetails()"> Hiển thị chi tiết từng ván
-                            </label>
-                            <div id="sim-details" style="display: none; margin-top: 5px; padding: 5px; background: #2F2F2F; border-radius: 5px; font-size: 10px; max-height: 200px; overflow-y: auto;">
-                            </div>
-                        </div>
-                    </div>
+                <div class="current-kq-container">
+                    <div class="current-kq" id="sim-initial-kq">Chưa có chuỗi KQ</div>
                 </div>
+                <div id="simulate-card" class="result-card">
+                    <div><span>Tổng ván:</span><span class="highlight" id="sim-total-rounds">0</span></div>
+                    <div><span>Win:</span><span class="highlight" id="sim-win-count">0</span></div>
+                    <div><span>Lose:</span><span class="highlight" id="sim-lose-count">0</span></div>
+                    <div><span>Max Win Streak:</span><span class="highlight" id="sim-max-win-streak">0</span></div>
+                    <div><span>Max Lose Streak:</span><span class="highlight" id="sim-max-lose-streak">0</span></div>
+                    <div><span>Vốn ban đầu:</span><span class="highlight" id="sim-initial-capital">0</span></div>
+                    <div><span>Vốn cuối:</span><span class="highlight" id="sim-final-capital">0</span></div>
+                    <div><span>Lãi/Lỗ:</span><span class="highlight" id="sim-profit-loss">0</span></div>
+                    <div><span>Max Lãi:</span><span class="highlight" id="sim-max-profit">0</span></div>
+                    <div><span>Max Lỗ:</span><span class="highlight" id="sim-max-loss">0</span></div>
+                </div>
+                <label class="checkbox-label sim-details-checkbox">
+                    <input type="checkbox" id="showSimDetails" onchange="toggleSimDetails()"> Hiển thị chi tiết
+                </label>
+                <div id="sim-details" style="display: none;"></div>
                 <div class="input-card">
                     <div class="input-group">
-                        <input type="text" id="sim-kq-input" placeholder="Nhập KQ (VD: clcl, 2131)" class="form-control" oninput="formatInput(this)">
-                        <select id="sim-kq-length" class="form-control">
-                            <option value="6">6 KQ</option>
-                            <option value="7">7 KQ</option>
-                            <option value="8">8 KQ</option>
-                        </select>
-                        <select id="sim-prediction-tool" class="form-control">
-                            <option value="analyze">Dự Đoán Chẵn Lẻ</option>
-                            <option value="ai_analyze">AI Dự Đoán</option>
-                        </select>
-                        <label style="font-size: 12px; color: #FFFFFF;">
-                            <input type="checkbox" id="use-betting" onchange="showBettingModal()"> Đặt cược
-                        </label>
-                        <button class="btn-custom" onclick="checkLoginAndSimulate()">Mô phỏng</button>
+                        <div class="dropdown-group">
+                            <select id="sim-kq-length" class="form-control">
+                                <option value="6">6 KQ</option>
+                                <option value="7">7 KQ</option>
+                                <option value="8">8 KQ</option>
+                            </select>
+                            <select id="sim-prediction-tool" class="form-control">
+                                <option value="analyze">Dự đoán chẵn/lẻ</option>
+                                <option value="ai_analyze">AI dự đoán</option>
+                            </select>
+                        </div>
+                        <input type="text" id="sim-kq-input" placeholder="Nhập KQ (VD: clclcl, 213121)" class="form-control" oninput="formatInput(this)">
+                        <div class="simulate-actions">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="use-betting" onchange="showBettingModal()"> Sử dụng thiết lập cược
+                            </label>
+                            <button class="btn-custom" onclick="checkLoginAndSimulate()">Mô phỏng</button>
+                        </div>
                     </div>
                 </div>
                 <div class="nav-bottom">
@@ -248,21 +238,24 @@
                 <button class="back-btn" onclick="goBack()"><i class="fas fa-chevron-left"></i></button>
                 <h1>Xổ số</h1>
             </header>
-            <div id="soso-details" class="sub-tab-details">
+            <div id="soso-sub-tab" class="sub-tab-content">
+                <div class="prediction-box">
+                    <div class="prediction-circle" id="soso-prediction-circle">
+                        <span class="prediction-text" id="soso-prediction">?</span>
+                    </div>
+                </div>
                 <div class="result-card">
                     <div class="result-section">
-                        <p class="current-kq" id="soso-current-soso">Chưa có chuỗi số</p>
-                        <p>Tỷ lệ số 0-9:</p>
+                        <p>Chuỗi số: <span class="highlight" id="soso-current-soso">Chưa có chuỗi số</span></p>
+                    </div>
+                    <div class="stats-section">
                         <p>0: <span class="highlight" id="soso-rate-0">0%</span> | 1: <span class="highlight" id="soso-rate-1">0%</span> | 2: <span class="highlight" id="soso-rate-2">0%</span> | 3: <span class="highlight" id="soso-rate-3">0%</span> | 4: <span class="highlight" id="soso-rate-4">0%</span></p>
                         <p>5: <span class="highlight" id="soso-rate-5">0%</span> | 6: <span class="highlight" id="soso-rate-6">0%</span> | 7: <span class="highlight" id="soso-rate-7">0%</span> | 8: <span class="highlight" id="soso-rate-8">0%</span> | 9: <span class="highlight" id="soso-rate-9">0%</span></p>
-                    </div>
-                    <div class="prediction-section">
-                        <div class="prediction-circle" id="soso-prediction-circle" data-percentage="0%">Số: <span id="soso-prediction">?</span></div>
                     </div>
                 </div>
                 <div class="input-card">
                     <div class="input-group">
-                        <input type="text" id="soso_input" placeholder="Nhập số (VD: 12345)" class="form-control">
+                        <input type="text" id="soso_input" placeholder="Nhập chuỗi số (VD: 123456)" class="form-control">
                         <select id="soso_length" class="form-control">
                             <option value="6">6 số</option>
                             <option value="7">7 số</option>
@@ -277,115 +270,130 @@
                 </div>
             </div>
         </div>
-        <div class="overlay" id="overlay" onclick="hideAllModals()"></div>
+        <div id="overlay" class="overlay"></div>
         <div id="login-modal" class="login-modal">
-            <button class="close-btn" onclick="hideModal('login-modal')">×</button>
-            <div id="modal-tab-login" class="modal-tab active">
-                <h3>Đăng nhập</h3>
-                <form id="login-form" onsubmit="handleLogin(event)">
-                    <div class="form-group">
-                        <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
-                    </div>
-                    <button type="submit" class="btn-custom">Đăng nhập</button>
-                    <div class="form-links">
-                        <a href="#" onclick="showRegisterTab()">Đăng ký</a>
-                        <a href="#" onclick="showForgotPasswordTab()">Quên mật khẩu?</a>
-                    </div>
-                </form>
-            </div>
-            <div id="modal-tab-register" class="modal-tab" style="display: none;">
-                <h3>Đăng ký</h3>
-                <form id="register-form" onsubmit="handleRegister(event)">
-                    <div class="form-group">
-                        <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
-                    </div>
-                    <button type="submit" class="btn-custom">Đăng ký</button>
-                    <div class="form-links">
-                        <a href="#" onclick="showLoginTab()">Quay lại đăng nhập</a>
-                    </div>
-                </form>
-            </div>
-            <div id="modal-tab-forgot" class="modal-tab" style="display: none;">
-                <h3>Quên mật khẩu</h3>
-                <form id="forgot-password-form" onsubmit="handleForgotPassword(event)">
-                    <div class="form-group">
-                        <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập" required>
-                    </div>
-                    <button type="submit" class="btn-custom">Gửi yêu cầu</button>
-                    <div class="form-links">
-                        <a href="#" onclick="showLoginTab()">Quay lại đăng nhập</a>
-                    </div>
-                </form>
+            <div class="modal-content">
+                <span class="close-btn" onclick="hideModal('login-modal')">×</span>
+                <div class="modal-tabs">
+                    <button onclick="showLoginTab()">Đăng nhập</button>
+                    <button onclick="showRegisterTab()">Đăng ký</button>
+                    <button onclick="showForgotPasswordTab()">Quên mật khẩu</button>
+                </div>
+                <div id="modal-tab-login" class="modal-tab">
+                    <h2>Đăng nhập</h2>
+                    <form id="login-form" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="login-username">Tên đăng nhập:</label>
+                            <input type="text" id="login-username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Mật khẩu:</label>
+                            <input type="password" id="login-password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn-custom">Đăng nhập</button>
+                    </form>
+                </div>
+                <div id="modal-tab-register" class="modal-tab">
+                    <h2>Đăng ký</h2>
+                    <form id="register-form" onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label for="register-username">Tên đăng nhập:</label>
+                            <input type="text" id="register-username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">Mật khẩu:</label>
+                            <input type="password" id="register-password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">Email:</label>
+                            <input type="email" id="register-email" name="email" required>
+                        </div>
+                        <button type="submit" class="btn-custom">Đăng ký</button>
+                    </form>
+                </div>
+                <div id="modal-tab-forgot" class="modal-tab">
+                    <h2>Quên mật khẩu</h2>
+                    <form id="forgot-password-form" onsubmit="handleForgotPassword(event)">
+                        <div class="form-group">
+                            <label for="forgot-email">Email:</label>
+                            <input type="email" id="forgot-email" name="email" required>
+                        </div>
+                        <button type="submit" class="btn-custom">Gửi yêu cầu</button>
+                    </form>
+                </div>
             </div>
         </div>
         <div id="betting-modal" class="betting-modal">
-            <button class="close-btn" onclick="hideModal('betting-modal')">×</button>
-            <h3>Thiết lập cược</h3>
-            <form id="betting-form" onsubmit="saveBettingSettings(event)">
-                <div class="form-capital">
-                    <div class="form-row">
-                        <div class="form-column">
-                            <label class="form-label" for="sim-initial-capital-input">Cài đặt vốn</label>
+            <div class="modal-content">
+                <span class="close-btn" onclick="hideModal('betting-modal')">×</span>
+                <h2>Thiết lập cược</h2>
+                <form id="betting-form" onsubmit="saveBettingSettings(event)">
+                    <div class="form-group">
+                        <label for="sim-initial-capital-input">Vốn ban đầu:</label>
+                        <input type="number" id="sim-initial-capital-input" name="initialCapital" min="0" value="0">
+                    </div>
+                    <div class="betting-columns">
+                        <div class="betting-column">
+                            <h3>Win</h3>
                             <div class="form-group">
-                                <input type="number" id="sim-initial-capital-input" name="initialCapital" autocomplete="off" placeholder="Vốn ban đầu" class="form-control" value="0">
+                                <label for="sim-win-1">Win 1:</label>
+                                <input type="number" id="sim-win-1" name="win1" min="0" value="0">
                             </div>
                             <div class="form-group">
-                                <input type="number" id="sim-min-bet" name="minBet" autocomplete="off" placeholder="Vốn tối thiểu" class="form-control" value="0">
+                                <label for="sim-win-2">Win 2:</label>
+                                <input type="number" id="sim-win-2" name="win2" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-win-3">Win 3:</label>
+                                <input type="number" id="sim-win-3" name="win3" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-win-4">Win 4:</label>
+                                <input type="number" id="sim-win-4" name="win4" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-win-5">Win 5:</label>
+                                <input type="number" id="sim-win-5" name="win5" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-win-6">Win 6 trở lên:</label>
+                                <input type="number" id="sim-win-6" name="win6" min="0" value="0">
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="betting-column">
+                            <h3>Lose</h3>
+                            <div class="form-group">
+                                <label for="sim-lose-1">Lose 1:</label>
+                                <input type="number" id="sim-lose-1" name="lose1" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-lose-2">Lose 2:</label>
+                                <input type="number" id="sim-lose-2" name="lose2" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-lose-3">Lose 3:</label>
+                                <input type="number" id="sim-lose-3" name="lose3" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-lose-4">Lose 4:</label>
+                                <input type="number" id="sim-lose-4" name="lose4" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-lose-5">Lose 5:</label>
+                                <input type="number" id="sim-lose-5" name="lose5" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="sim-lose-6">Lose 6 trở lên:</label>
+                                <input type="number" id="sim-lose-6" name="lose6" min="0" value="0">
                             </div>
                         </div>
                     </div>
-                    <hr class="orange-line">
-                </div>
-                <div class="form-row">
-                    <div class="form-column">
-                        <label class="form-label" for="sim-win-1">Cài đặt Win</label>
-                        <div class="form-group">
-                            <input type="number" id="sim-win-1" name="win1" autocomplete="off" placeholder="Win 1" class="form-control" value="0">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="sim-win-2" name="win2" autocomplete="off" placeholder="Win 2" class="form-control" value="0">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="sim-win-3" name="win3" autocomplete="off" placeholder="Win 3" class="form-control" value="0">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="sim-win-4" name="win4" autocomplete="off" placeholder="Win 4" class="form-control" value="0">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="sim-win-5" name="win5" autocomplete="off" placeholder="Win 5" class="form-control" value="0">
-                        </div>
-                    </div>
-                    <div class="form-column">
-                        <label class="form-label" for="sim-lose-1">Cài đặt Lose</label>
-                        <div class="form-group">
-                            <input type="number" id="sim-lose-1" name="lose1" autocomplete="off" placeholder="Lose 1" class="form-control" value="0">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="sim-lose-2" name="lose2" autocomplete="off" placeholder="Lose 2" class="form-control" value="0">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="sim-lose-3" name="lose3" autocomplete="off" placeholder="Lose 3" class="form-control" value="0">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="sim-lose-4" name="lose4" autocomplete="off" placeholder="Lose 4" class="form-control" value="0">
-                        </div>
-                        <div class="form-group">
-                            <input type="number" id="sim-lose-5" name="lose5" autocomplete="off" placeholder="Lose 5" class="form-control" value="0">
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="btn-custom">Lưu</button>
-            </form>
+                    <button type="submit" class="btn-custom">Lưu</button>
+                </form>
+            </div>
         </div>
     </div>
-    <script src="/static/js/scripts.js"></script>
-    <!-- Xóa các script không cần thiết liên quan đến iframe -->
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92258d708ae76744',t:'MTc0MjMwOTUzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script src="/static/js/scripts.js" defer></script>
 </body>
 </html>

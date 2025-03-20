@@ -81,6 +81,7 @@ body {
 .welcome-text {
     color: #FFFFFF;
 }
+
 .logout-link {
     color: #FF0000;
     cursor: pointer;
@@ -532,89 +533,79 @@ body {
     text-decoration: underline;
 }
 
-/* Thêm cấu trúc 2 cột cho betting-modal */
-.betting-modal .form-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.betting-modal .form-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.betting-modal .form-group {
-    margin-bottom: 5px;
-    width: 100%;
-}
-
-.betting-modal .form-label {
-    font-size: 12px;
-    font-weight: 700;
-    color: #FFFFFF;
-    margin-bottom: 5px;
-}
-
-.betting-modal .form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #FFA500;
-    background: #0F0C2F;
-    color: #FFFFFF;
+/* Cập nhật CSS cho betting-modal theo yêu cầu */
+.betting-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #2F2F2F;
+    padding: 15px;
     border-radius: 5px;
-    font-size: 12px;
+    z-index: 1001;
+    border: 2px solid #FFA500;
+    width: 320px;
+    max-width: 90%;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
-.betting-modal .btn-custom {
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    font-size: 14px;
+.betting-modal h2 {
+    margin: 0 0 15px;
+    font-size: 16px;
+    text-align: center;
+    color: #FFFFFF;
 }
 
-.betting-modal .form-capital {
-    margin-bottom: 10px;
-}
-
-.betting-modal .orange-line {
-    border: 0;
-    height: 1px;
-    background: #FFA500;
-    margin: 10px 0;
-}
-
-.betting-modal .form-row {
+.betting-columns {
     display: flex;
     justify-content: space-between;
     gap: 10px;
+    position: relative;
 }
 
-.betting-modal .form-column {
+.betting-column {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.betting-modal .form-group {
+.betting-column h3 {
+    text-align: center;
+    color: #FFA500;
+    font-size: 14px;
     margin-bottom: 5px;
-    width: 100%;
 }
 
-.betting-modal .form-label {
+.divider {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #FFA500;
+    transform: translateX(-50%);
+}
+
+.betting-modal .form-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.betting-modal .form-group label {
+    flex: 1;
+    color: #FFFFFF;
     font-size: 12px;
     font-weight: 700;
-    color: #FFFFFF;
-    margin-bottom: 5px;
 }
 
 .betting-modal .form-group input {
-    width: 100%;
-    padding: 8px;
+    flex: 1;
+    padding: 5px;
     border: 1px solid #FFA500;
     background: #0F0C2F;
     color: #FFFFFF;
@@ -632,17 +623,16 @@ body {
 
 /* Thêm CSS riêng cho trang mô phỏng */
 .simulate-result-card {
-    margin-top: 10px; 
-    
+    margin-top: 10px;
 }
 
 .simulate-result-card h3 {
-    font-size: 100%; 
+    font-size: 100%;
 }
 
 #sim-details {
     display: none;
-    margin-top: 5px;
+    margin-top: 245px;
     padding: 5px;
     background: #2F2F2F;
     border-radius: 5px;
@@ -678,20 +668,47 @@ body {
     background: #0F0C2F;
 }
 
-/* CSS riêng cho phần tổng kết mô phỏng */
 #simulate-card {
-    position: absolute;
-    top: -5px;
+    position: fixed;
+    top: 110px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
     background-color: #1a1a2e;
     color: #fff;
-    padding: 2px;
+    padding: 10px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    width: 100%;
-    max-width: 400px;
+    width: 345px;
+    height: 150px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Chia đều 2 cột */
+    gap: 10px; /* Khoảng cách giữa các cột */
+    align-items: start;
+}
+
+#simulate-card div {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    white-space: nowrap; /* Ngăn xuống dòng */
+    overflow: hidden; /* Ẩn phần tràn */
+    text-overflow: ellipsis; /* Thêm dấu ... nếu nội dung quá dài */
+    font-size: 12px; /* Kích thước chữ */
+}
+
+#simulate-card div span:first-child {
+    color: #FFA500; /* Màu của nhãn */
+    white-space: nowrap; /* Ngăn nhãn xuống dòng */
+    overflow: hidden; /* Ẩn phần tràn */
+    text-overflow: ellipsis; /* Thêm dấu ... nếu nhãn quá dài */
+}
+
+#simulate-card div span:last-child {
+    color: #FFFFFF; /* Màu của số liệu */
+    margin-left: 2px; /* Khoảng cách nhỏ giữa nhãn và số liệu */
+    white-space: nowrap; /* Ngăn số liệu xuống dòng */
+    overflow: hidden; /* Ẩn phần tràn */
+    text-overflow: ellipsis; /* Thêm dấu ... nếu số liệu quá dài */
 }
 
 /* Đảm bảo không ảnh hưởng đến các phần khác */
@@ -700,4 +717,49 @@ body {
     z-index: 1;
 }
 
-/* Giữ nguyên các style khác nếu có */
+/* Điều chỉnh checkbox-label trong chanle-simulate */
+#chanle-simulate .checkbox-label.sim-details-checkbox {
+    position: fixed;
+    top: 235px;
+    left: 15px; /* Căn trái */
+    transform: none;
+    z-index: 1000;
+    color: #FFFFFF;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Điều chỉnh dropdown-group trong chanle-simulate */
+.dropdown-group {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+    justify-content: center;
+}
+
+.dropdown-group .form-control {
+    width: 150px !important; /* Điều chỉnh chiều rộng dropdown */
+}
+
+/* Điều chỉnh simulate-actions */
+.simulate-actions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.simulate-actions .checkbox-label {
+    color: #FFFFFF;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.simulate-actions .btn-custom {
+    width: 150px; /* Điều chỉnh chiều rộng nút Mô phỏng */
+}

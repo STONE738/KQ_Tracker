@@ -32,13 +32,13 @@ let simFinalCapital = 0;
 let simProfitLoss = 0;
 let simMaxProfit = 0;
 let simMaxLoss = 0;
-let simMaxWinStreak = 0;  // Thêm khai báo
-let simMaxLoseStreak = 0; // Thêm khai báo
+let simMaxWinStreak = 0;
+let simMaxLoseStreak = 0;
 let simDetails = [];
 let userBettingSettings = JSON.parse(localStorage.getItem(`bettingSettings_${sessionStorage.getItem('loggedInUser') || 'default'}`)) || {
     initialCapital: 0,
-    win1: 0, win2: 0, win3: 0, win4: 0, win5: 0,
-    lose1: 0, lose2: 0, lose3: 0, lose4: 0, lose5: 0
+    win1: 0, win2: 0, win3: 0, win4: 0, win5: 0, win6: 0,
+    lose1: 0, lose2: 0, lose3: 0, lose4: 0, lose5: 0, lose6: 0
 };
 
 function formatInput(inputElement) {
@@ -407,21 +407,23 @@ function loadBettingSettings() {
     const username = sessionStorage.getItem('loggedInUser') || 'default';
     userBettingSettings = JSON.parse(localStorage.getItem(`bettingSettings_${username}`)) || {
         initialCapital: 0,
-        win1: 0, win2: 0, win3: 0, win4: 0, win5: 0,
-        lose1: 0, lose2: 0, lose3: 0, lose4: 0, lose5: 0
+        win1: 0, win2: 0, win3: 0, win4: 0, win5: 0, win6: 0,
+        lose1: 0, lose2: 0, lose3: 0, lose4: 0, lose5: 0, lose6: 0
     };
-    console.log("Loaded betting settings:", userBettingSettings); // Debug
+    console.log("Loaded betting settings:", userBettingSettings);
     const initialCapitalInput = document.getElementById('sim-initial-capital-input');
     const win1Input = document.getElementById('sim-win-1');
     const win2Input = document.getElementById('sim-win-2');
     const win3Input = document.getElementById('sim-win-3');
     const win4Input = document.getElementById('sim-win-4');
     const win5Input = document.getElementById('sim-win-5');
+    const win6Input = document.getElementById('sim-win-6');
     const lose1Input = document.getElementById('sim-lose-1');
     const lose2Input = document.getElementById('sim-lose-2');
     const lose3Input = document.getElementById('sim-lose-3');
     const lose4Input = document.getElementById('sim-lose-4');
     const lose5Input = document.getElementById('sim-lose-5');
+    const lose6Input = document.getElementById('sim-lose-6');
 
     if (initialCapitalInput) initialCapitalInput.value = userBettingSettings.initialCapital || 0;
     if (win1Input) win1Input.value = userBettingSettings.win1 || 0;
@@ -429,11 +431,13 @@ function loadBettingSettings() {
     if (win3Input) win3Input.value = userBettingSettings.win3 || 0;
     if (win4Input) win4Input.value = userBettingSettings.win4 || 0;
     if (win5Input) win5Input.value = userBettingSettings.win5 || 0;
+    if (win6Input) win6Input.value = userBettingSettings.win6 || 0;
     if (lose1Input) lose1Input.value = userBettingSettings.lose1 || 0;
     if (lose2Input) lose2Input.value = userBettingSettings.lose2 || 0;
     if (lose3Input) lose3Input.value = userBettingSettings.lose3 || 0;
     if (lose4Input) lose4Input.value = userBettingSettings.lose4 || 0;
     if (lose5Input) lose5Input.value = userBettingSettings.lose5 || 0;
+    if (lose6Input) lose6Input.value = userBettingSettings.lose6 || 0;
 }
 
 function loadBettingSettingsToForm() {
@@ -444,43 +448,50 @@ function loadBettingSettingsToForm() {
     const win3Input = document.getElementById('sim-win-3');
     const win4Input = document.getElementById('sim-win-4');
     const win5Input = document.getElementById('sim-win-5');
+    const win6Input = document.getElementById('sim-win-6');
     const lose1Input = document.getElementById('sim-lose-1');
     const lose2Input = document.getElementById('sim-lose-2');
     const lose3Input = document.getElementById('sim-lose-3');
     const lose4Input = document.getElementById('sim-lose-4');
     const lose5Input = document.getElementById('sim-lose-5');
+    const lose6Input = document.getElementById('sim-lose-6');
 
-    if (initialCapitalInput) initialCapitalInput.value = settings.initialCapital;
-    if (win1Input) win1Input.value = settings.win1;
-    if (win2Input) win2Input.value = settings.win2;
-    if (win3Input) win3Input.value = settings.win3;
-    if (win4Input) win4Input.value = settings.win4;
-    if (win5Input) win5Input.value = settings.win5;
-    if (lose1Input) lose1Input.value = settings.lose1;
-    if (lose2Input) lose2Input.value = settings.lose2;
-    if (lose3Input) lose3Input.value = settings.lose3;
-    if (lose4Input) lose4Input.value = settings.lose4;
-    if (lose5Input) lose5Input.value = settings.lose5;
+    if (initialCapitalInput) initialCapitalInput.value = settings.initialCapital || 0;
+    if (win1Input) win1Input.value = settings.win1 || 0;
+    if (win2Input) win2Input.value = settings.win2 || 0;
+    if (win3Input) win3Input.value = settings.win3 || 0;
+    if (win4Input) win4Input.value = settings.win4 || 0;
+    if (win5Input) win5Input.value = settings.win5 || 0;
+    if (win6Input) win6Input.value = settings.win6 || 0;
+    if (lose1Input) lose1Input.value = settings.lose1 || 0;
+    if (lose2Input) lose2Input.value = settings.lose2 || 0;
+    if (lose3Input) lose3Input.value = settings.lose3 || 0;
+    if (lose4Input) lose4Input.value = settings.lose4 || 0;
+    if (lose5Input) lose5Input.value = settings.lose5 || 0;
+    if (lose6Input) lose6Input.value = settings.lose6 || 0;
 }
 
 function saveBettingSettings(event) {
     event.preventDefault();
-    userBettingSettings = {
+    const newSettings = {
         initialCapital: parseInt(document.getElementById('sim-initial-capital-input').value) || 0,
         win1: parseInt(document.getElementById('sim-win-1').value) || 0,
         win2: parseInt(document.getElementById('sim-win-2').value) || 0,
         win3: parseInt(document.getElementById('sim-win-3').value) || 0,
         win4: parseInt(document.getElementById('sim-win-4').value) || 0,
         win5: parseInt(document.getElementById('sim-win-5').value) || 0,
+        win6: parseInt(document.getElementById('sim-win-6').value) || 0,
         lose1: parseInt(document.getElementById('sim-lose-1').value) || 0,
         lose2: parseInt(document.getElementById('sim-lose-2').value) || 0,
         lose3: parseInt(document.getElementById('sim-lose-3').value) || 0,
         lose4: parseInt(document.getElementById('sim-lose-4').value) || 0,
-        lose5: parseInt(document.getElementById('sim-lose-5').value) || 0
+        lose5: parseInt(document.getElementById('sim-lose-5').value) || 0,
+        lose6: parseInt(document.getElementById('sim-lose-6').value) || 0
     };
+    userBettingSettings = { ...newSettings };
     const username = sessionStorage.getItem('loggedInUser') || 'default';
     localStorage.setItem(`bettingSettings_${username}`, JSON.stringify(userBettingSettings));
-    console.log("Saved betting settings:", userBettingSettings); // Debug
+    console.log("Saved betting settings:", userBettingSettings);
     hideModal('betting-modal');
     document.getElementById('use-betting').checked = true;
 }
@@ -584,37 +595,25 @@ function checkLoginAndSimulate() {
             const useBetting = document.getElementById('use-betting').checked;
             formData.append('use_betting', useBetting.toString());
             loadBettingSettings();
-            console.log("Current userBettingSettings:", userBettingSettings);
             if (useBetting) {
                 if (userBettingSettings.initialCapital <= 0) {
                     alert("Vui lòng thiết lập Vốn ban đầu lớn hơn 0 trong Thiết lập cược!");
                     return;
                 }
-                formData.append('initial_capital', userBettingSettings.initialCapital);
-                const winStreakBetIncrease = JSON.stringify({
-                    "1": userBettingSettings.win1,
-                    "2": userBettingSettings.win2,
-                    "3": userBettingSettings.win3,
-                    "4": userBettingSettings.win4,
-                    "5": userBettingSettings.win5
-                });
-                const loseStreakBetIncrease = JSON.stringify({
-                    "1": userBettingSettings.lose1,
-                    "2": userBettingSettings.lose2,
-                    "3": userBettingSettings.lose3,
-                    "4": userBettingSettings.lose4,
-                    "5": userBettingSettings.lose5
-                });
-                formData.append('win_streak_bet_increase', winStreakBetIncrease);
-                formData.append('lose_streak_bet_increase', loseStreakBetIncrease);
-                console.log("Sent betting data:", { initialCapital: userBettingSettings.initialCapital, winStreakBetIncrease, loseStreakBetIncrease }); // Debug
-            } else {
-                formData.append('initial_capital', 0);
-                formData.append('win_streak_bet_increase', JSON.stringify({"1": 0, "2": 0, "3": 0, "4": 0, "5": 0}));
-                formData.append('lose_streak_bet_increase', JSON.stringify({"1": 0, "2": 0, "3": 0, "4": 0, "5": 0}));
+                if (!userBettingSettings.win1 && !userBettingSettings.lose1) {
+                    alert("Vui lòng thiết lập ít nhất mức cược Win 1 hoặc Lose 1!");
+                    return;
+                }
             }
+            formData.append('betting_settings', JSON.stringify(userBettingSettings));
+            console.log("Sent betting data:", userBettingSettings);
             fetch('/simulate', { method: 'POST', body: formData, credentials: 'include' })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(result => {
                     console.log("Simulation result:", result);
                     if (result.error) {
@@ -653,6 +652,7 @@ function checkLoginAndSimulate() {
                 })
                 .catch(error => {
                     console.error('Error simulating:', error);
+                    alert(`Lỗi khi mô phỏng: ${error.message}. Vui lòng kiểm tra kết nối server.`);
                     simTotalRounds = 0;
                     simWinCount = 0;
                     simLoseCount = 0;
@@ -735,65 +735,68 @@ function updateSimulateResultSection() {
         console.error("simulate-card element not found");
         return;
     }
-    simulateCard.style.display = 'block';
+    simulateCard.style.display = isSimulated ? 'grid' : 'none';
 
     const simInitialKq = document.getElementById('sim-initial-kq');
-    const simTotalRoundsElement = document.getElementById('sim-total-rounds');
-    const simWinCountElement = document.getElementById('sim-win-count');
-    const simLoseCountElement = document.getElementById('sim-lose-count');
-    const simInitialCapitalElement = document.getElementById('sim-initial-capital');
-    const simFinalCapitalElement = document.getElementById('sim-final-capital');
-    const simProfitLossElement = document.getElementById('sim-profit-loss');
-    const simMaxProfitElement = document.getElementById('sim-max-profit');
-    const simMaxLossElement = document.getElementById('sim-max-loss');
-    const simMaxWinStreakElement = document.getElementById('sim-max-win-streak');
-    const simMaxLoseStreakElement = document.getElementById('sim-max-lose-streak');
-    const simDetailsDiv = document.getElementById('sim-details');
-
     if (simInitialKq) simInitialKq.textContent = currentSimKQ.join(' ') || 'Chưa có chuỗi KQ';
-    if (simTotalRoundsElement) simTotalRoundsElement.textContent = simTotalRounds || 0;
-    if (simWinCountElement) simWinCountElement.textContent = simWinCount || 0;
-    if (simLoseCountElement) simLoseCountElement.textContent = simLoseCount || 0;
-    if (simInitialCapitalElement) simInitialCapitalElement.textContent = simInitialCapital || 0;
-    if (simFinalCapitalElement) simFinalCapitalElement.textContent = simFinalCapital || 0;
-    if (simProfitLossElement) simProfitLossElement.textContent = simProfitLoss || 0;
-    if (simMaxProfitElement) simMaxProfitElement.textContent = simMaxProfit || 0;
-    if (simMaxLossElement) simMaxLossElement.textContent = simMaxLoss || 0;
-    if (simMaxWinStreakElement) simMaxWinStreakElement.textContent = simMaxWinStreak || 0;
-    if (simMaxLoseStreakElement) simMaxLoseStreakElement.textContent = simMaxLoseStreak || 0;
 
+    simulateCard.innerHTML = `
+        <div><span>Tổng ván:</span><span class="highlight">${simTotalRounds || 0}</span></div>
+        <div><span>Win:</span><span class="highlight">${simWinCount || 0}</span></div>
+        <div><span>Lose:</span><span class="highlight">${simLoseCount || 0}</span></div>
+        <div><span>Max Win Streak:</span><span class="highlight">${simMaxWinStreak || 0}</span></div>
+        <div><span>Max Lose Streak:</span><span class="highlight">${simMaxLoseStreak || 0}</span></div>
+        <div><span>Vốn ban đầu:</span><span class="highlight">${simInitialCapital ? simInitialCapital.toFixed(1) : 0}</span></div>
+        <div><span>Vốn cược:</span><span class="highlight">${simFinalCapital ? simFinalCapital.toFixed(1) : 0}</span></div>
+        <div><span>Lãi/Lỗ:</span><span class="highlight">${simProfitLoss ? simProfitLoss.toFixed(1) : 0}</span></div>
+        <div><span>Max Lãi:</span><span class="highlight">${simMaxProfit ? simMaxProfit.toFixed(1) : 0}</span></div>
+        <div><span>Max Lỗ:</span><span class="highlight">${simMaxLoss ? simMaxLoss.toFixed(1) : 0}</span></div>
+    `;
+
+    const simDetailsDiv = document.getElementById('sim-details');
     if (simDetailsDiv) {
-        simDetailsDiv.innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ván</th>
-                        <th>Dự đoán</th>
-                        <th>Thực tế</th>
-                        <th>Kết quả</th>
-                        <th>Cược</th>
-                        <th>Lãi/Lỗ</th>
-                        <th>Vốn sau</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        `;
-        const tbody = simDetailsDiv.querySelector('tbody');
-        simDetails.forEach(round => {
-            const row = document.createElement('tr');
-            const isWin = round.prediction === round.actual;
-            row.innerHTML = `
-                <td>${round.round}</td>
-                <td>${round.prediction || 'N/A'}</td>
-                <td>${round.actual || 'N/A'}</td>
-                <td>${isWin ? 'Win' : 'Lose'}</td>
-                <td>${round.bet !== undefined ? round.bet : '0'}</td>
-                <td>${round.profit_loss !== undefined ? round.profit_loss : '0'}</td>
-                <td>${round.capital_after !== undefined ? round.capital_after : simInitialCapital}</td>
+        const showDetailsCheckbox = document.getElementById('showSimDetails');
+        if (showDetailsCheckbox && showDetailsCheckbox.checked) {
+            simDetailsDiv.style.display = 'block';
+            let tableHTML = `
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #FFA500; color: #0F0C2F;">
+                            <th>Ván</th>
+                            <th>Dự đoán</th>
+                            <th>Thực tế</th>
+                            <th>Kết quả</th>
+                            <th>Cược</th>
+                            <th>Lãi/Lỗ</th>
+                            <th>Vốn sau</th>
+                        </tr>
+                    </thead>
+                    <tbody>
             `;
-            tbody.appendChild(row);
-        });
+            simDetails.forEach(round => {
+                const resultColor = round.result === 'Win' ? 'green' : 'red';
+                const predictionDisplay = round.prediction_rate ? `${round.prediction} (${round.prediction_rate}%)` : round.prediction || 'N/A';
+                const streakDisplay = round.result === 'Win' ? round.win_streak : round.lose_streak;
+                tableHTML += `
+                    <tr style="color: ${resultColor};">
+                        <td>${round.round}</td>
+                        <td>${predictionDisplay}</td>
+                        <td>${round.actual || 'N/A'}</td>
+                        <td>${round.result} (${streakDisplay})</td>
+                        <td>${round.bet !== undefined ? Number(round.bet).toFixed(1) : '0'}</td>
+                        <td>${round.profit_loss !== undefined ? Number(round.profit_loss).toFixed(1) : '0'}</td>
+                        <td>${round.capital_after !== undefined ? Number(round.capital_after).toFixed(1) : simInitialCapital}</td>
+                    </tr>
+                `;
+            });
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            simDetailsDiv.innerHTML = tableHTML;
+        } else {
+            simDetailsDiv.style.display = 'none';
+        }
     }
 }
 
@@ -963,7 +966,7 @@ function logout() {
         .then(data => {
             if (data.success) {
                 sessionStorage.removeItem('loggedInUser');
-                userBettingSettings = { initialCapital: 0, win1: 0, win2: 0, win3: 0, win4: 0, win5: 0, lose1: 0, lose2: 0, lose3: 0, lose4: 0, lose5: 0 };
+                userBettingSettings = { initialCapital: 0, win1: 0, win2: 0, win3: 0, win4: 0, win5: 0, win6: 0, lose1: 0, lose2: 0, lose3: 0, lose4: 0, lose5: 0, lose6: 0 };
                 const loginBtnContainer = document.getElementById('login-btn-container');
                 loginBtnContainer.innerHTML = `
                     <button class="login-btn" onclick="showLoginModal()">Đăng nhập</button>
@@ -998,4 +1001,40 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         })
         .catch(error => console.error('Error checking login on load:', error));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('/check_login', { method: 'GET', credentials: 'include' })
+        .then(response => response.json())
+        .then(data => {
+            const loginBtnContainer = document.getElementById('login-btn-container');
+            if (data.logged_in) {
+                sessionStorage.setItem('loggedInUser', data.username);
+                userBettingSettings = JSON.parse(localStorage.getItem(`bettingSettings_${data.username}`)) || userBettingSettings;
+                loginBtnContainer.innerHTML = `
+                    <span class="welcome-text">Chào, ${data.username} | </span><span class="logout-link" onclick="logout()">Thoát</span>
+                `;
+            } else {
+                loginBtnContainer.innerHTML = `
+                    <button class="login-btn" onclick="showLoginModal()">Đăng nhập</button>
+                `;
+            }
+        })
+        .catch(error => console.error('Error checking login on load:', error));
+
+    // Gắn sự kiện cho các lobby card
+    const xocdiaCard = document.getElementById('xocdia-card');
+    const xosoCard = document.getElementById('xoso-card');
+
+    if (xocdiaCard) {
+        xocdiaCard.addEventListener('click', () => {
+            showTab('chanle_lobby', 'chanle');
+        });
+    }
+
+    if (xosoCard) {
+        xosoCard.addEventListener('click', () => {
+            showTab('soso_lobby', 'soso');
+        });
+    }
 });
